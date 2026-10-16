@@ -1,0 +1,42 @@
+# Build outputs
+bin/
+obj/
+out/
+dist/
+build/
+target/
+coverage/
+TestResults/
+
+# Dependencies
+node_modules/
+vendor/
+
+# IDEs and editors
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.swp
+
+# Operating systems
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+secrets.*
+*.local
+
+# Generated documentation
+site/
+docs/_build/
