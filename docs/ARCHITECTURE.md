@@ -1,29 +1,39 @@
-# Architecture Proposal
+# Architecture
 
 ## Status
 
-This document describes the proposed architecture, not components already implemented.
+Rust is the implementation language and Tree-sitter is the initial parsing technology. The repository currently contains an early Rust source scanner and syntax diagnostics. Documentation extraction, configuration, and output renderers remain future work.
 
-## Pipeline
+## Initial pipeline
 
-1. **Configuration** loads settings and validates options.
-2. **Discovery** walks configured source roots, applies include/exclude rules, and identifies candidate files.
-3. **Language adapters** parse files and extract symbols, documentation comments, signatures, and source locations.
-4. **Intermediate model** represents files, modules, symbols, parameters, return values, examples, and diagnostics in a language-neutral form.
-5. **Validation** checks documentation consistency and reports issues without inventing intent.
+1. **CLI** parses commands and arguments.
+2. **Discovery** walks configured roots, skips common dependency/build directories, and selects supported files.
+3. **Language adapters** parse source files with Tree-sitter grammars and extract symbols, comments, signatures, and source locations.
+4. **Intermediate model** represents projects, files, modules, symbols, documentation fields, and diagnostics in a language-neutral form.
+5. **Validation** checks documentation consistency without inventing missing intent.
 6. **Renderers** transform the shared model into HTML, Markdown, or JSON.
 
-## Boundaries
+## Module boundaries
 
-- The core must not depend on a particular programming language.
-- Adapters must not own HTML or Markdown presentation.
-- Renderers must not re-parse source code.
-- Parsing untrusted source must not execute it.
-- Network access should not be required for local generation.
+- `cli`: command-line interface and exit codes.
+- `discovery`: safe recursive source discovery and ignore rules.
+- `parsers`: language-specific Tree-sitter adapters.
+- `model`: serializable language-neutral documentation types.
+- `validate`: documentation rules and stable diagnostics.
+- `renderers`: output backends, independent of parser implementations.
+- `config`: configuration parsing, validation, and precedence.
+
+These are logical boundaries; the initial implementation is intentionally smaller.
+
+## Tree-sitter adapters
+
+Each adapter should declare supported file extensions and language conventions, parse source without executing it, and return normalized symbols plus diagnostics. Parser errors should be recoverable where practical so one malformed file does not necessarily prevent documentation for the rest of a project.
+
+Tree-sitter provides syntax trees, not complete semantic analysis. The engine must not claim type resolution or compiler-level guarantees unless a language-specific semantic backend supplies them.
 
 ## Intermediate model
 
-The initial model should consider these entities:
+The initial model should support:
 
 - Project and source file
 - Module or namespace
@@ -36,23 +46,14 @@ The initial model should consider these entities:
 
 Only populate fields actually supported by an adapter. Unknown values should remain unknown rather than being fabricated.
 
-## Adapter contract
-
-Each adapter should declare supported languages and documentation conventions, determine whether it can process a file, and return normalized symbols plus diagnostics. Parser errors should be recoverable where practical so one malformed file does not necessarily prevent documentation for the rest of the project.
-
-## Renderer contract
-
-Renderers consume only the intermediate model and produce deterministic output where practical. They must escape untrusted source text correctly, generate stable links, and avoid embedding executable source content.
-
 ## Configuration
 
 Configuration should cover source roots, include/exclude patterns, output formats and destination, private/internal symbol handling, and strictness. Define precedence between configuration files, command-line flags, and defaults before implementation.
 
-## Initial milestones
+## Security and determinism
 
-1. Select the implementation language and package/build system.
-2. Define and test the intermediate model.
-3. Implement file discovery and diagnostics.
-4. Implement one language adapter and one renderer end-to-end.
-5. Add fixtures and integration tests.
-6. Add further adapters and output formats based on real use cases.
+- Treat source files as untrusted data and never execute them.
+- Do not follow directory symlinks by default.
+- Escape source-derived text in generated HTML.
+- Avoid network access during ordinary local generation.
+- Keep output ordering stable and diagnostics actionable.
