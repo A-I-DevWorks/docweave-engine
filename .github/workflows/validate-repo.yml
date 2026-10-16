@@ -1,0 +1,29 @@
+name: Validate repository
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate repository structure
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Verify required project files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s README.md
+          test -s CONTRIBUTING.md
+          test -s docs/ARCHITECTURE.md
+          test -s docs/ROADMAP.md
+          echo "Required documentation files are present."
