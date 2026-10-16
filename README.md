@@ -2,36 +2,51 @@
 
 **A language-agnostic engine for generating structured, navigable documentation from source code.**
 
-DocWeave Engine aims to analyze source files, extract documentation and code symbols, and publish consistent documentation in multiple formats.
+DocWeave analyzes source files, extracts code structure and documentation comments, and aims to publish consistent documentation in multiple formats.
 
-> **Project status:** Early development. Architecture and APIs may change. Features described as goals are not necessarily implemented yet.
+> **Project status:** Early development. The initial Rust scanning milestone is underway; full documentation extraction and rendering are not implemented yet.
 
-## Goals
+## Current implementation
 
-- Support multiple programming languages through independent parser adapters.
-- Normalize extracted symbols and documentation into a shared intermediate model.
-- Generate documentation through replaceable output backends.
-- Make source discovery, exclusions, and output settings configurable.
-- Report parsing issues and missing documentation instead of silently guessing.
-- Run locally and integrate into automated CI workflows.
+- Rust 2024 edition.
+- Tree-sitter-based Rust syntax parsing.
+- Recursive discovery of `.rs` files.
+- Skips common generated/dependency directories: `.git`, `target`, `node_modules`, and `vendor`.
+- Reports syntax-error and missing-node counts.
+- Unit tests for source discovery and syntax diagnostics.
 
-## Proposed architecture
+## Quick start
+
+Install the Rust stable toolchain, then run:
+
+```sh
+cargo test
+cargo run -- scan .
+```
+
+Scan a specific project directory:
+
+```sh
+cargo run -- scan ./path/to/project
+```
+
+The first build downloads dependencies from crates.io. Source files are parsed as data; DocWeave does not execute analyzed source code.
+
+## Planned architecture
 
 ```text
-Source files
-    |
-    v
-Configuration and discovery
-    |
-    v
-Language adapters / parsers
-    |
-    v
-Intermediate documentation model
-    |
-    +--> HTML renderer
-    +--> Markdown renderer
-    +--> JSON exporter
+Configuration and source discovery
+              |
+              v
+     Language adapters
+       (Tree-sitter)
+              |
+              v
+ Language-neutral document model
+              |
+       +------+------+
+       v      v      v
+     HTML  Markdown  JSON
 ```
 
 The core should remain independent of individual languages and output formats. Language-specific behavior belongs in adapters; presentation belongs in renderers.
@@ -44,24 +59,9 @@ The core should remain independent of individual languages and output formats. L
 4. **Reproducibility.** Identical source and configuration should produce stable output wherever practical.
 5. **Useful diagnostics.** Explain unsupported syntax and malformed documentation with file and location context.
 
-## Planned outputs
+## Roadmap
 
-- **HTML** — navigable documentation.
-- **Markdown** — repository-friendly documentation.
-- **JSON** — machine-readable export.
-- **PDF** — a possible later output, after the core pipeline stabilizes.
-
-## Repository layout
-
-- `docs/` — architecture and design notes.
-- `examples/` — small input projects and fixtures.
-- `tests/` — unit and integration tests.
-- `.github/workflows/` — automated checks.
-- `src/` — implementation, once the language and build system are selected.
-
-## Development
-
-The implementation language and package/build system have not yet been finalized. See [the architecture proposal](docs/ARCHITECTURE.md) and [roadmap](docs/ROADMAP.md).
+See [docs/ROADMAP.md](docs/ROADMAP.md) for milestones and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for design boundaries.
 
 ## Contributing
 
@@ -69,4 +69,4 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) before proposing changes.
 
 ## License
 
-No license has been selected yet. Until a license is added, assume the contents are all rights reserved; do not assume permission to reuse, distribute, or modify them.
+The repository does not yet have a finalized license. Until one is selected and added, assume all rights are reserved.
