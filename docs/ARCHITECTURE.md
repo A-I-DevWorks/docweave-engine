@@ -2,7 +2,7 @@
 
 ## Status
 
-Rust is the implementation language and Tree-sitter is the initial parsing technology. The repository contains a Rust source scanner, a language-neutral documentation model, Rust symbol and doc-comment extraction, and syntax diagnostics. Configuration and output renderers remain future work.
+Rust is the implementation language and Tree-sitter is the initial parsing technology. The repository contains a Rust source scanner, a language-neutral documentation model, Rust symbol and doc-comment extraction, validated TOML configuration, and a Markdown renderer. JSON and HTML output remain future work.
 
 ## Initial pipeline
 
@@ -23,7 +23,7 @@ Rust is the implementation language and Tree-sitter is the initial parsing techn
 - `renderers`: output backends, independent of parser implementations.
 - `config`: configuration parsing, validation, and precedence.
 
-These are logical boundaries; the initial implementation is intentionally smaller.
+These are logical boundaries; the implementation currently has the Rust adapter, model, TOML config loader, Markdown renderer, and CLI in focused modules.
 
 ## Tree-sitter adapters
 
@@ -48,7 +48,7 @@ Only populate fields actually supported by an adapter. Unknown values should rem
 
 ## Configuration
 
-Configuration should cover source roots, include/exclude patterns, output formats and destination, private/internal symbol handling, and strictness. Define precedence between configuration files, command-line flags, and defaults before implementation.
+The current `docweave.toml` config supports a title, source directory, Markdown output path, and optional hosted source URL. Relative config paths resolve from the config file's directory; a CLI output override resolves from the working directory. Configuration is validated before scanning or writing. Include/exclude rules, visibility controls, and strictness remain future work.
 
 ## Security and determinism
 

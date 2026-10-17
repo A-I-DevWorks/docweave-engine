@@ -1,0 +1,3 @@
+title = "Showcase"
+source = "../showcase"
+output = "../docs/showcase.md"

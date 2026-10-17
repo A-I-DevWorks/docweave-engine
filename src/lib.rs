@@ -10,6 +10,8 @@ use anyhow::{Context, Result};
 use tree_sitter::{Parser, Tree};
 use walkdir::WalkDir;
 
+pub mod config;
+pub mod markdown;
 pub mod model;
 mod rust_extract;
 
@@ -80,15 +82,46 @@ pub fn scan_rust(root: &Path) -> Result<Vec<ParsedFile>> {
 
 /// Scan a Rust project and extract its language-neutral documentation model.
 pub fn document_rust(root: &Path) -> Result<DocProject> {
-    let files = scan_rust(root)?;
+    let root = root
+        .canonicalize()
+        .with_context(|| format!("failed to resolve source directory {}", root.display()))?;
+    let files = scan_rust(&root)?;
     let files = files
         .iter()
-        .map(|file| rust_extract::extract_rust(&file.path, &file.source, &file.tree))
+        .map(|file| {
+            let path = file.path.strip_prefix(&root).unwrap_or(&file.path);
+            rust_extract::extract_rust(path, &file.source, &file.tree)
+        })
         .collect();
     Ok(DocProject {
         root: root.display().to_string(),
         files,
     })
+}
+
+/// Generate Markdown documentation using validated configuration.
+pub fn generate_markdown(config: &config::Config) -> Result<PathBuf> {
+    config.validate()?;
+    let project = document_rust(&config.source)?;
+    let parent = config.output.parent().unwrap_or(Path::new("."));
+    std::fs::create_dir_all(parent)
+        .with_context(|| format!("failed to create output directory {}", parent.display()))?;
+    let output_parent = parent
+        .canonicalize()
+        .with_context(|| format!("failed to resolve output directory {}", parent.display()))?;
+    let markdown = markdown::render(
+        &project,
+        &config.title,
+        &output_parent,
+        config.source_url.as_deref(),
+    );
+    std::fs::write(&config.output, markdown).with_context(|| {
+        format!(
+            "failed to write Markdown output {}",
+            config.output.display()
+        )
+    })?;
+    Ok(config.output.clone())
 }
 
 /// Count syntax error and missing nodes in a parsed syntax tree.
