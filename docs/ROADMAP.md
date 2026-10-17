@@ -18,10 +18,10 @@
 
 ## Milestone 3 — First output
 
-- [ ] Add validated configuration (TOML).
-- [ ] Implement Markdown rendering.
-- [ ] Add stable anchors and links to source locations.
-- [ ] Add end-to-end tests.
+- [x] Add validated configuration (TOML).
+- [x] Implement Markdown rendering.
+- [x] Add stable anchors and links to source locations.
+- [x] Add end-to-end tests.
 
 ## Milestone 4 — Extensibility
 

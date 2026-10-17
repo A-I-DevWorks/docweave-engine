@@ -1,0 +1,6 @@
+title = "DocWeave API"
+source = "."
+output = "docs/api.md"
+
+# Optional: link source locations to a hosted repository.
+# source_url = "https://github.com/owner/repository/blob/main"

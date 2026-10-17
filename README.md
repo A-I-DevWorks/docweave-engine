@@ -15,6 +15,7 @@ DocWeave analyzes source files, extracts code structure and documentation commen
 - Extracts Rust modules, structs, enums, traits, functions, methods, and constants into a serializable language-neutral model.
 - Preserves explicit `///` and `//!` documentation and records source-located syntax diagnostics.
 - Unit tests and fixtures for source discovery, extraction, and malformed syntax.
+- Validated TOML configuration and Markdown documentation generation with symbol anchors and source links.
 
 ## Quick start
 
@@ -23,6 +24,7 @@ Install the Rust stable toolchain, then run:
 ```sh
 cargo test
 cargo run -- scan .
+cargo run -- generate --config docweave.toml
 ```
 
 Scan a specific project directory:
@@ -32,6 +34,8 @@ cargo run -- scan ./path/to/project
 ```
 
 The first build downloads dependencies from crates.io. Source files are parsed as data; DocWeave does not execute analyzed source code.
+
+Copy [docweave.toml.example](docweave.toml.example) to `docweave.toml`, edit its title and paths, then run `cargo run -- generate --config docweave.toml`. Without a config file, generation uses the current directory as source and writes `docs.md`; `--output` can override the output file. The generated Markdown includes a contents list, stable file and symbol anchors, source-line links, documentation comments, signatures, and parse diagnostics. Set `source_url` to link to a hosted source repository instead of local files.
 
 ## Planned architecture
 
