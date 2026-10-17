@@ -10,10 +10,18 @@ use anyhow::{Context, Result};
 use tree_sitter::{Parser, Tree};
 use walkdir::WalkDir;
 
+pub mod model;
+mod rust_extract;
+
+pub use model::{
+    Diagnostic, DiagnosticSeverity, DocFile, DocProject, DocSymbol, SourceSpan, SymbolKind,
+};
+
 /// A source file discovered and parsed by DocWeave.
 #[derive(Debug)]
 pub struct ParsedFile {
     pub path: PathBuf,
+    pub source: String,
     pub tree: Tree,
 }
 
@@ -61,12 +69,26 @@ pub fn scan_rust(root: &Path) -> Result<Vec<ParsedFile>> {
 
         parsed.push(ParsedFile {
             path: entry.path().to_path_buf(),
+            source,
             tree,
         });
     }
 
     parsed.sort_by(|a, b| a.path.cmp(&b.path));
     Ok(parsed)
+}
+
+/// Scan a Rust project and extract its language-neutral documentation model.
+pub fn document_rust(root: &Path) -> Result<DocProject> {
+    let files = scan_rust(root)?;
+    let files = files
+        .iter()
+        .map(|file| rust_extract::extract_rust(&file.path, &file.source, &file.tree))
+        .collect();
+    Ok(DocProject {
+        root: root.display().to_string(),
+        files,
+    })
 }
 
 /// Count syntax error and missing nodes in a parsed syntax tree.
@@ -124,5 +146,26 @@ mod tests {
         let tree = parser.parse("fn broken( {", None).unwrap();
 
         assert!(syntax_issue_count(&tree) > 0);
+    }
+
+    #[test]
+    fn builds_a_project_documentation_model() {
+        let temp = tempfile::tempdir().expect("temporary directory");
+        std::fs::write(
+            temp.path().join("lib.rs"),
+            "//! Project docs.\n/// Adds values.\npub fn add(a: i32, b: i32) -> i32 { a + b }",
+        )
+        .expect("write fixture");
+
+        let project = document_rust(temp.path()).expect("document project");
+
+        assert_eq!(project.files.len(), 1);
+        assert_eq!(
+            project.files[0].documentation.as_deref(),
+            Some("Project docs.")
+        );
+        assert_eq!(project.files[0].symbols[0].name, "add");
+        fn assert_serializable<T: serde::Serialize>() {}
+        assert_serializable::<DocProject>();
     }
 }

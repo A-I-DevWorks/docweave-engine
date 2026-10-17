@@ -2,7 +2,7 @@
 
 ## Status
 
-Rust is the implementation language and Tree-sitter is the initial parsing technology. The repository currently contains an early Rust source scanner and syntax diagnostics. Documentation extraction, configuration, and output renderers remain future work.
+Rust is the implementation language and Tree-sitter is the initial parsing technology. The repository contains a Rust source scanner, a language-neutral documentation model, Rust symbol and doc-comment extraction, and syntax diagnostics. Configuration and output renderers remain future work.
 
 ## Initial pipeline
 

@@ -7,14 +7,14 @@
 - [x] Recursively discover Rust files and skip common generated/dependency directories.
 - [x] Report Tree-sitter syntax errors and missing nodes.
 - [x] Add initial unit tests.
-- [ ] Run formatting, tests, and lint checks in CI.
+- [x] Run formatting, tests, and lint checks in CI.
 
 ## Milestone 2 — Documentation model
 
-- [ ] Define serializable project, file, symbol, source-span, and diagnostic types.
-- [ ] Extract Rust modules, structs, enums, traits, functions, methods, and constants.
-- [ ] Preserve Rust doc comments (`///` and `//! `) without inventing missing documentation.
-- [ ] Add fixtures for nested modules, generics, attributes, and malformed files.
+- [x] Define serializable project, file, symbol, source-span, and diagnostic types.
+- [x] Extract Rust modules, structs, enums, traits, functions, methods, and constants.
+- [x] Preserve Rust doc comments (`///` and `//! `) without inventing missing documentation.
+- [x] Add fixtures for nested modules, generics, attributes, and malformed files.
 
 ## Milestone 3 — First output
 

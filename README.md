@@ -4,7 +4,7 @@
 
 DocWeave analyzes source files, extracts code structure and documentation comments, and aims to publish consistent documentation in multiple formats.
 
-> **Project status:** Early development. The initial Rust scanning milestone is underway; full documentation extraction and rendering are not implemented yet.
+> **Project status:** Early development. Rust scanning and extraction into a shared documentation model are implemented; configuration and output rendering are planned.
 
 ## Current implementation
 
@@ -12,8 +12,9 @@ DocWeave analyzes source files, extracts code structure and documentation commen
 - Tree-sitter-based Rust syntax parsing.
 - Recursive discovery of `.rs` files.
 - Skips common generated/dependency directories: `.git`, `target`, `node_modules`, and `vendor`.
-- Reports syntax-error and missing-node counts.
-- Unit tests for source discovery and syntax diagnostics.
+- Extracts Rust modules, structs, enums, traits, functions, methods, and constants into a serializable language-neutral model.
+- Preserves explicit `///` and `//!` documentation and records source-located syntax diagnostics.
+- Unit tests and fixtures for source discovery, extraction, and malformed syntax.
 
 ## Quick start
 
@@ -62,6 +63,7 @@ The core should remain independent of individual languages and output formats. L
 ## Roadmap
 
 See [docs/ROADMAP.md](docs/ROADMAP.md) for milestones and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for design boundaries.
+For Rust documentation-comment syntax and examples, see [docs/RUST_DOC_COMMENTS.md](docs/RUST_DOC_COMMENTS.md).
 
 ## Contributing
 
