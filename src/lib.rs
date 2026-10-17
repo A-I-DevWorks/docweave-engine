@@ -23,11 +23,13 @@ pub struct ParsedFile {
 /// Individual unreadable or malformed files return an error with path context.
 pub fn scan_rust(root: &Path) -> Result<Vec<ParsedFile>> {
     let mut parser = Parser::new();
+
     parser
         .set_language(&tree_sitter_rust::LANGUAGE.into())
         .context("failed to initialize the Tree-sitter Rust grammar")?;
 
     let mut parsed = Vec::new();
+
     for entry in WalkDir::new(root)
         .follow_links(false)
         .into_iter()
@@ -35,6 +37,7 @@ pub fn scan_rust(root: &Path) -> Result<Vec<ParsedFile>> {
             if !entry.file_type().is_dir() {
                 return true;
             }
+
             !matches!(
                 entry.file_name().to_str(),
                 Some(".git" | "target" | "node_modules" | "vendor")
@@ -42,6 +45,7 @@ pub fn scan_rust(root: &Path) -> Result<Vec<ParsedFile>> {
         })
     {
         let entry = entry.with_context(|| format!("failed while walking {}", root.display()))?;
+
         if !entry.file_type().is_file()
             || entry.path().extension().and_then(|ext| ext.to_str()) != Some("rs")
         {
@@ -50,16 +54,17 @@ pub fn scan_rust(root: &Path) -> Result<Vec<ParsedFile>> {
 
         let source = std::fs::read_to_string(entry.path())
             .with_context(|| format!("failed to read {}", entry.path().display()))?;
+
         let tree = parser
             .parse(&source, None)
-            .with_context(|| format!("Tree-sitter failed to parse {}", entry.path().display()))?
-            .ok_or_else(|| anyhow::anyhow!("parser returned no syntax tree for {}", entry.path().display()))?;
+            .with_context(|| format!("Tree-sitter failed to parse {}", entry.path().display()))?;
 
         parsed.push(ParsedFile {
             path: entry.path().to_path_buf(),
             tree,
         });
     }
+
     parsed.sort_by(|a, b| a.path.cmp(&b.path));
     Ok(parsed)
 }
@@ -70,7 +75,9 @@ pub fn syntax_issue_count(tree: &Tree) -> usize {
         if node.is_error() || node.is_missing() {
             *count += 1;
         }
+
         let mut cursor = node.walk();
+
         for child in node.children(&mut cursor) {
             visit(child, count);
         }
@@ -78,6 +85,7 @@ pub fn syntax_issue_count(tree: &Tree) -> usize {
 
     let mut count = 0;
     visit(tree.root_node(), &mut count);
+
     count
 }
 
@@ -89,12 +97,17 @@ mod tests {
     #[test]
     fn scans_and_parses_rust_files() {
         let temp = tempfile::tempdir().expect("temporary directory");
-        fs::write(temp.path().join("example.rs"), "/// Adds two values.\npub fn add(a: i32, b: i32) -> i32 { a + b }")
-            .expect("write fixture");
-        fs::write(temp.path().join("ignored.txt"), "not Rust")
-            .expect("write non-Rust fixture");
+
+        fs::write(
+            temp.path().join("example.rs"),
+            "/// Adds two values.\npub fn add(a: i32, b: i32) -> i32 { a + b }",
+        )
+        .expect("write fixture");
+
+        fs::write(temp.path().join("ignored.txt"), "not Rust").expect("write non-Rust fixture");
 
         let files = scan_rust(temp.path()).expect("scan source");
+
         assert_eq!(files.len(), 1);
         assert_eq!(files[0].path.file_name().unwrap(), "example.rs");
         assert_eq!(syntax_issue_count(&files[0].tree), 0);
@@ -103,8 +116,13 @@ mod tests {
     #[test]
     fn detects_invalid_rust_syntax() {
         let mut parser = Parser::new();
-        parser.set_language(&tree_sitter_rust::LANGUAGE.into()).unwrap();
+
+        parser
+            .set_language(&tree_sitter_rust::LANGUAGE.into())
+            .unwrap();
+
         let tree = parser.parse("fn broken( {", None).unwrap();
+
         assert!(syntax_issue_count(&tree) > 0);
     }
 }
