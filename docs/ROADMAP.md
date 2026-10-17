@@ -25,7 +25,9 @@
 
 ## Milestone 4 — Extensibility
 
-- [ ] Add JSON export.
-- [ ] Add HTML output with safe escaping.
-- [ ] Add Tree-sitter adapters for additional languages based on real use cases.
-- [ ] Evaluate PDF only after the model and renderers stabilize.
+- [x] Add JSON export.
+- [x] Add HTML output with safe escaping.
+- [x] Add Tree-sitter adapters for C, C++, Python, and Lua.
+- [x] Document how to create an adapter for another language.
+- [x] Generate documentation for the Docweave project itself using Docweave.
+- [x] Evaluate PDF after the model and renderers stabilize; defer implementation to a later milestone (see [PDF_OUTPUT_EVALUATION.md](PDF_OUTPUT_EVALUATION.md)).

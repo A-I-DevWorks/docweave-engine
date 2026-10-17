@@ -28,7 +28,7 @@ pub struct DocSymbol {
     pub span: SourceSpan,
 }
 
-/// Kinds of declarations represented by the initial Rust adapter.
+/// Shared declaration kinds used by the built-in language adapters.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum SymbolKind {
