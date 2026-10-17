@@ -5,7 +5,11 @@ use clap::{Parser as ClapParser, Subcommand};
 use docweave_engine::{scan_rust, syntax_issue_count};
 
 #[derive(Debug, ClapParser)]
-#[command(name = "docweave", version, about = "Generate structured documentation from source code.")]
+#[command(
+    name = "docweave",
+    version,
+    about = "Generate structured documentation from source code."
+)]
 struct Cli {
     #[command(subcommand)]
     command: Command,
@@ -29,11 +33,7 @@ fn main() -> Result<()> {
             for file in &files {
                 let issues = syntax_issue_count(&file.tree);
                 total_issues += issues;
-                println!(
-                    "{}: {} syntax issue(s)",
-                    file.path.display(),
-                    issues
-                );
+                println!("{}: {} syntax issue(s)", file.path.display(), issues);
             }
             println!(
                 "Scanned {} Rust file(s); {} syntax issue(s) found.",
