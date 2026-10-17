@@ -11,6 +11,7 @@ DocWeave Engine is in early development. Contributions should favor small, testa
 - Never execute analyzed source code as part of documentation generation.
 - Do not commit credentials, private source files, build outputs, or generated documentation unless explicitly required by a fixture.
 - Update documentation when behavior or configuration changes.
+- Whenever supported Rust documentation-comment syntax or its extraction behavior changes, update [docs/RUST_DOC_COMMENTS.md](docs/RUST_DOC_COMMENTS.md) and the related fixtures and tests.
 
 ## Pull requests
 
