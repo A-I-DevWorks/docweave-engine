@@ -92,12 +92,13 @@ impl Config {
             bail!("source path is not a directory: {}", self.source.display());
         }
         if self.output.as_os_str().is_empty()
-            || !self
-                .output
-                .extension()
-                .is_some_and(|extension| extension.eq_ignore_ascii_case("md"))
+            || !self.output.extension().is_some_and(|extension| {
+                ["md", "json", "html"]
+                    .iter()
+                    .any(|supported| extension.eq_ignore_ascii_case(supported))
+            })
         {
-            bail!("output path must have a .md extension");
+            bail!("output path must use a supported .md, .json, or .html extension");
         }
         if let Some(url) = &self.source_url
             && (!url.starts_with("https://") && !url.starts_with("http://")
@@ -157,7 +158,7 @@ mod tests {
         std::fs::write(&config_path, "title = \"\"\nunknown = true\n").unwrap();
         assert!(Config::load(Some(&config_path)).is_err());
 
-        std::fs::write(&config_path, "title = \"Valid\"\noutput = \"site.html\"\n").unwrap();
+        std::fs::write(&config_path, "title = \"Valid\"\noutput = \"site.pdf\"\n").unwrap();
         assert!(Config::load(Some(&config_path)).is_err());
     }
 }

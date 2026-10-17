@@ -59,7 +59,10 @@ pub fn render(
                 code_span(&symbol.name)
             ));
             if let Some(signature) = &symbol.signature {
-                output.push_str(&format!("{}\n\n", fenced_code(signature)));
+                output.push_str(&format!(
+                    "{}\n\n",
+                    fenced_code(signature, syntax_language(&file.path))
+                ));
             }
             if let Some(documentation) = &symbol.documentation {
                 output.push_str(documentation.trim());
@@ -273,10 +276,27 @@ fn code_span(value: &str) -> String {
     format!("{fence}{padding}{value}{padding}{fence}")
 }
 
-fn fenced_code(value: &str) -> String {
+fn fenced_code(value: &str, language: &str) -> String {
     let longest = value.lines().map(max_backtick_run).max().unwrap_or(0);
     let fence = "`".repeat((longest + 1).max(3));
-    format!("{fence}rust\n{value}\n{fence}")
+    format!("{fence}{language}\n{value}\n{fence}")
+}
+
+fn syntax_language(path: &str) -> &'static str {
+    match Path::new(path)
+        .extension()
+        .and_then(|extension| extension.to_str())
+        .unwrap_or_default()
+        .to_ascii_lowercase()
+        .as_str()
+    {
+        "rs" => "rust",
+        "c" | "h" => "c",
+        "cc" | "cpp" | "cxx" | "hh" | "hpp" | "hxx" => "cpp",
+        "py" | "pyi" => "python",
+        "lua" => "lua",
+        _ => "text",
+    }
 }
 
 fn max_backtick_run(value: &str) -> usize {

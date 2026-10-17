@@ -4,18 +4,19 @@
 
 DocWeave analyzes source files, extracts code structure and documentation comments, and aims to publish consistent documentation in multiple formats.
 
-> **Project status:** Early development. Rust scanning and extraction into a shared documentation model are implemented; configuration and output rendering are planned.
+> **Project status:** Early development. Rust, C, C++, Python, and Lua source files can be scanned into a shared documentation model and rendered as Markdown, JSON, or HTML.
 
 ## Current implementation
 
 - Rust 2024 edition.
-- Tree-sitter-based Rust syntax parsing.
-- Recursive discovery of `.rs` files.
+- Tree-sitter-based syntax parsing for the supported languages.
+- Recursive discovery of supported source extensions.
 - Skips common generated/dependency directories: `.git`, `target`, `node_modules`, and `vendor`.
 - Extracts Rust modules, structs, enums, traits, functions, methods, and constants into a serializable language-neutral model.
-- Preserves explicit `///` and `//!` documentation and records source-located syntax diagnostics.
+- Includes initial Tree-sitter adapters for C, C++, Python, and Lua.
+- Preserves each language's explicit documentation comments or docstrings and records source-located syntax diagnostics.
 - Unit tests and fixtures for source discovery, extraction, and malformed syntax.
-- Validated TOML configuration and Markdown documentation generation with symbol anchors and source links.
+- Validated TOML configuration and Markdown, JSON, and safe HTML documentation export.
 
 ## Quick start
 
@@ -35,7 +36,11 @@ cargo run -- scan ./path/to/project
 
 The first build downloads dependencies from crates.io. Source files are parsed as data; DocWeave does not execute analyzed source code.
 
-Copy [docweave.toml.example](docweave.toml.example) to `docweave.toml`, edit its title and paths, then run `cargo run -- generate --config docweave.toml`. Without a config file, generation uses the current directory as source and writes `docs.md`; `--output` can override the output file. The generated Markdown includes a contents list, stable file and symbol anchors, source-line links, documentation comments, signatures, and parse diagnostics. Set `source_url` to link to a hosted source repository instead of local files.
+Copy [docweave.toml.example](docweave.toml.example) to `docweave.toml`, edit its title and paths, then run `cargo run -- generate --config docweave.toml`. The output extension selects Markdown (`.md`), JSON (`.json`), or HTML (`.html`). Without a config file, generation uses the current directory as source and writes `docs.md`; `--output` can override the output file. Markdown and HTML include documentation comments, signatures, and parse diagnostics; JSON serializes the language-neutral model. HTML escapes source-derived text and treats raw HTML in doc comments as text. Set `source_url` to link to a hosted source repository instead of local files.
+
+The supported languages currently have focused initial extraction coverage; see [the language adapter guide](docs/ADDING_LANGUAGE_ADAPTERS.md) for extensions, comment conventions, supported declarations, and how to add another adapter.
+
+PDF generation is deferred; see the [PDF output evaluation](docs/PDF_OUTPUT_EVALUATION.md) for the current decision.
 
 ## Planned architecture
 
@@ -68,6 +73,7 @@ The core should remain independent of individual languages and output formats. L
 
 See [docs/ROADMAP.md](docs/ROADMAP.md) for milestones and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for design boundaries.
 For Rust documentation-comment syntax and examples, see [docs/RUST_DOC_COMMENTS.md](docs/RUST_DOC_COMMENTS.md).
+The generated reference for this repository is [docs/PROJECT_DOCUMENTATION.md](docs/PROJECT_DOCUMENTATION.md); regenerate it with `cargo run -- generate --config docweave.toml.example --output docs/PROJECT_DOCUMENTATION.md`.
 
 ## Contributing
 

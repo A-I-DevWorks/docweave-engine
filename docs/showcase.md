@@ -2,6 +2,8 @@
 
 ## Contents
 
+- [`c_api.c`](#file-c-api-c)
+  - [Function `multiply_values`](#symbol-c-api-c-function-multiply-values)
 - [`catalog.rs`](#file-catalog-rs)
   - [Struct `ItemId`](#symbol-catalog-rs-struct-itemid)
   - [Method `new`](#symbol-catalog-rs-method-new)
@@ -20,12 +22,25 @@
   - [Method `summary`](#symbol-catalog-rs-method-summary)
   - [Method `summary`](#symbol-catalog-rs-method-summary-2)
   - [Constant `MAX_TITLE_LENGTH`](#symbol-catalog-rs-constant-max-title-length)
+- [`cpp_api.cpp`](#file-cpp-api-cpp)
+  - [Module `examples`](#symbol-cpp-api-cpp-module-examples)
+  - [Struct `Greeter`](#symbol-cpp-api-cpp-struct-greeter)
+  - [Method `greet`](#symbol-cpp-api-cpp-method-greet)
+  - [Function `add_values`](#symbol-cpp-api-cpp-function-add-values)
+- [`data_model.py`](#file-data-model-py)
+  - [Constant `MAX_ITEMS`](#symbol-data-model-py-constant-max-items)
+  - [Struct `Catalog`](#symbol-data-model-py-struct-catalog)
+  - [Method `find`](#symbol-data-model-py-method-find)
+  - [Function `normalize_title`](#symbol-data-model-py-function-normalize-title)
 - [`lib.rs`](#file-lib-rs)
   - [Module `catalog`](#symbol-lib-rs-module-catalog)
   - [Module `service`](#symbol-lib-rs-module-service)
   - [Module `markdown_examples`](#symbol-lib-rs-module-markdown-examples)
 - [`markdown_examples.rs`](#file-markdown-examples-rs)
   - [Function `markdown_features_example`](#symbol-markdown-examples-rs-function-markdown-features-example)
+- [`plugin.lua`](#file-plugin-lua)
+  - [Function `plugin.add`](#symbol-plugin-lua-function-plugin-add)
+  - [Method `plugin:label`](#symbol-plugin-lua-method-plugin-label)
 - [`service.rs`](#file-service-rs)
   - [Struct `Catalog`](#symbol-service-rs-struct-catalog)
   - [Method `new`](#symbol-service-rs-method-new)
@@ -33,6 +48,26 @@
   - [Method `len`](#symbol-service-rs-method-len)
   - [Method `is_empty`](#symbol-service-rs-method-is-empty)
   - [Function `render_public_item`](#symbol-service-rs-function-render-public-item)
+
+<a id="file-c-api-c"></a>
+## `c_api.c`
+
+# C adapter example
+
+This file demonstrates a block documentation comment and a C function.
+
+<a id="symbol-c-api-c-function-multiply-values"></a>
+### Function: `multiply_values`
+
+```c
+int multiply_values(int left, int right)
+```
+
+Multiply two integers and return the result.
+
+**Parameters:** `left` and `right` are the input values.
+
+[View source](../showcase/c_api.c#L11)
 
 <a id="file-catalog-rs"></a>
 ## `catalog.rs`
@@ -237,6 +272,106 @@ Tamanho máximo recomendado para títulos exibidos em uma linha.
 
 [View source](../showcase/catalog.rs#L117)
 
+<a id="file-cpp-api-cpp"></a>
+## `cpp_api.cpp`
+
+# C++ adapter example
+
+C++ namespaces and classes map into the shared module and struct kinds.
+
+<a id="symbol-cpp-api-cpp-module-examples"></a>
+### Module: `examples`
+
+```cpp
+namespace examples
+```
+
+[View source](../showcase/cpp_api.cpp#L4)
+
+<a id="symbol-cpp-api-cpp-struct-greeter"></a>
+### Struct: `Greeter`
+
+```cpp
+class Greeter
+```
+
+A small type with one documented method.
+
+[View source](../showcase/cpp_api.cpp#L7)
+
+<a id="symbol-cpp-api-cpp-method-greet"></a>
+### Method: `greet`
+
+```cpp
+const char *greet(const char *name) const
+```
+
+Return a greeting for `name`.
+
+[View source](../showcase/cpp_api.cpp#L10)
+
+<a id="symbol-cpp-api-cpp-function-add-values"></a>
+### Function: `add_values`
+
+```cpp
+int add_values(int left, int right);
+```
+
+Add two integers.
+
+[View source](../showcase/cpp_api.cpp#L16)
+
+<a id="file-data-model-py"></a>
+## `data_model.py`
+
+# Python adapter example
+
+Python module, class, and function docstrings become Markdown documentation.
+
+<a id="symbol-data-model-py-constant-max-items"></a>
+### Constant: `MAX_ITEMS`
+
+```python
+MAX_ITEMS = 25
+```
+
+[View source](../showcase/data_model.py#L6)
+
+<a id="symbol-data-model-py-struct-catalog"></a>
+### Struct: `Catalog`
+
+```python
+class Catalog:
+```
+
+A small collection with a documented lookup method.
+
+[View source](../showcase/data_model.py#L9)
+
+<a id="symbol-data-model-py-method-find"></a>
+### Method: `find`
+
+```python
+def find(self, item_id: str) -> str | None:
+```
+
+Find an item by its stable identifier.
+
+Returns `None` when the item is not present.
+
+[View source](../showcase/data_model.py#L12)
+
+<a id="symbol-data-model-py-function-normalize-title"></a>
+### Function: `normalize_title`
+
+```python
+def normalize_title(value: str) -> str:
+```
+
+Normalize a title by trimming surrounding whitespace.
+
+[View source](../showcase/data_model.py#L20)
+
 <a id="file-lib-rs"></a>
 ## `lib.rs`
 
@@ -331,6 +466,34 @@ Abaixo há um separador horizontal:
 ---
 
 [View source](../showcase/markdown_examples.rs#L38)
+
+<a id="file-plugin-lua"></a>
+## `plugin.lua`
+
+# Lua adapter example
+Lua `---` comments immediately above a function are treated as docs.
+
+<a id="symbol-plugin-lua-function-plugin-add"></a>
+### Function: `plugin.add`
+
+```lua
+function plugin.add(left, right)
+```
+
+Calculate the sum of two numbers.
+
+[View source](../showcase/plugin.lua#L5)
+
+<a id="symbol-plugin-lua-method-plugin-label"></a>
+### Method: `plugin:label`
+
+```lua
+function plugin:label(value)
+```
+
+Format a label using method-style syntax.
+
+[View source](../showcase/plugin.lua#L11)
 
 <a id="file-service-rs"></a>
 ## `service.rs`
