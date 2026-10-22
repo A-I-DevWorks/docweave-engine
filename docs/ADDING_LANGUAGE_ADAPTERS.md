@@ -20,6 +20,35 @@ The `.h` extension is assigned to C to avoid ambiguous dispatch. Use `.hpp`,
 only the constructs listed above; they do not resolve types, infer undocumented
 meaning, or claim compiler-level semantic analysis.
 
+## Current extraction scope and limitations
+
+- **Rust:** extracts named modules, structs, enums, traits, functions, methods,
+  constants, and statics. Documentation comes from `///` and `//!`; block doc
+  comments are not currently extracted. The adapter preserves syntax text and
+  does not resolve macros, imports, types, or conditional compilation.
+- **C:** extracts named structs, enums, function definitions, and declarations
+  with function declarators. It recognizes `///`, `//!`, `/** ... */`, and
+  `/*! ... */` comments when they directly precede a declaration. It does not
+  model fields, typedef aliases, macros, or C semantic distinctions.
+- **C++:** extracts namespaces, classes/structs, enums, functions, and methods.
+  It recognizes the same comment forms as C. Classes map to the shared `struct`
+  kind; namespace nesting and overload resolution are not represented in the
+  shared model.
+- **Python:** extracts classes, functions, methods, and uppercase module-level
+  assignments as constants. Only the first string expression in a module,
+  class, or function body is treated as a docstring. Decorator semantics,
+  assignments other than module constants, and type resolution are not modeled.
+- **Lua:** extracts named function declarations, including dotted functions
+  and colon-style methods. Only leading `---` comments are documentation;
+  anonymous functions and table-based function assignments are not extracted.
+  Nested named declarations are returned as symbols without a parent scope in
+  the shared model.
+
+All adapters report Tree-sitter syntax errors with source spans when the grammar
+recovers an error or missing node. Signatures are source text, not normalized
+or semantically validated. Nested declarations may be emitted as independent
+symbols because the shared model currently has no parent/qualified-scope field.
+
 ## Adapter contract
 
 The registry is in [`src/adapters/mod.rs`](../src/adapters/mod.rs). Implement

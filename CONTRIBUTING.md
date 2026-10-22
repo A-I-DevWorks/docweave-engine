@@ -19,4 +19,6 @@ Include the motivation, implementation summary, validation performed, and known 
 
 ## Project status
 
-The implementation language and build system have not yet been finalized. Toolchain-specific commands will be documented after that decision.
+The engine is implemented in Rust and uses Cargo. Run `cargo test` before
+submitting changes, and keep adapter and renderer behavior covered by
+representative fixtures.

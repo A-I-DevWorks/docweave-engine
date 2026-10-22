@@ -34,10 +34,10 @@
 
 ## Milestone 5 — Validate extraction in supported languages
 
-- [ ] Define the declarations and documentation forms each adapter is expected to recognize.
-- [ ] Add focused, representative fixtures for Rust, C, C++, Python, and Lua.
-- [ ] Cover missing documentation, invalid syntax, nested code, and complex signatures.
-- [ ] Document each language's known limitations.
+- [x] Define the declarations and documentation forms each adapter is expected to recognize.
+- [x] Add focused, representative fixtures for Rust, C, C++, Python, and Lua.
+- [x] Cover missing documentation, invalid syntax, nested code, and complex signatures.
+- [x] Document each language's known limitations.
 
 ## Milestone 6 — Improve the user experience
 

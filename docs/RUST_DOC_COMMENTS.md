@@ -93,7 +93,7 @@ for file in project.files {
 # Ok::<(), anyhow::Error>(())
 ```
 
-DocWeave keeps documentation absent when no supported comment is present; it does not invent descriptions. The command-line scanner currently reports syntax diagnostics and does not render this model yet.
+DocWeave keeps documentation absent when no supported comment is present; it does not invent descriptions. The CLI can render the extracted model as Markdown, JSON, or HTML; see the README for configuration and generation commands.
 
 ## Current support and limitations
 
