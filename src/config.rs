@@ -20,6 +20,7 @@ pub struct Config {
 #[derive(Debug, Deserialize)]
 #[serde(default, deny_unknown_fields)]
 struct FileConfig {
+    config_version: u32,
     title: String,
     description: Option<String>,
     source: PathBuf,
@@ -32,6 +33,7 @@ struct FileConfig {
 impl Default for FileConfig {
     fn default() -> Self {
         Self {
+            config_version: 1,
             title: "Project Documentation".to_owned(),
             description: None,
             source: PathBuf::from("."),
@@ -52,6 +54,12 @@ impl Config {
                 .with_context(|| format!("failed to read config {}", path.display()))?;
             let file: FileConfig = toml::from_str(&text)
                 .with_context(|| format!("invalid TOML config {}", path.display()))?;
+            if file.config_version != 1 {
+                bail!(
+                    "unsupported config_version {}; this release supports version 1",
+                    file.config_version
+                );
+            }
             let parent = path
                 .parent()
                 .filter(|p| !p.as_os_str().is_empty())
@@ -238,5 +246,17 @@ mod tests {
 
         std::fs::write(&config_path, "title = \"Valid\"\noutput = \"site.pdf\"\n").unwrap();
         assert!(Config::load(Some(&config_path)).is_err());
+    }
+
+    #[test]
+    fn accepts_config_version_one_and_rejects_unknown_versions() {
+        let temp = tempfile::tempdir().unwrap();
+        let config_path = temp.path().join("docweave.toml");
+        std::fs::write(&config_path, "config_version = 1\n").unwrap();
+        assert!(Config::load(Some(&config_path)).is_ok());
+
+        std::fs::write(&config_path, "config_version = 2\n").unwrap();
+        let error = Config::load(Some(&config_path)).unwrap_err();
+        assert!(error.to_string().contains("supports version 1"));
     }
 }

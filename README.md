@@ -99,6 +99,7 @@ The core should remain independent of individual languages and output formats. L
 See [docs/ROADMAP.md](docs/ROADMAP.md) for milestones and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for design boundaries.
 For Rust documentation-comment syntax and examples, see [docs/RUST_DOC_COMMENTS.md](docs/RUST_DOC_COMMENTS.md).
 The generated reference for this repository is [docs/PROJECT_DOCUMENTATION.md](docs/PROJECT_DOCUMENTATION.md); regenerate it with `cargo run -- generate --config docweave.toml.example --output docs/PROJECT_DOCUMENTATION.md`.
+Configuration versioning is described in [docs/CONFIG_FORMAT.md](docs/CONFIG_FORMAT.md); distribution steps and 1.0 release criteria are in [docs/RELEASING.md](docs/RELEASING.md).
 
 ## Contributing
 
@@ -106,4 +107,4 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) before proposing changes.
 
 ## License
 
-The repository does not yet have a finalized license. Until one is selected and added, assume all rights are reserved.
+DocWeave Engine is distributed under the [MIT License](LICENSE).

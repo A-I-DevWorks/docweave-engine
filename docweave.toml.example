@@ -1,3 +1,4 @@
+config_version = 1
 title = "DocWeave API"
 description = "Reference documentation generated from the project source."
 source = "."

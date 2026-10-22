@@ -62,7 +62,7 @@
 
 ## Milestone 9 — Prepare a usable release
 
-- [ ] Choose and add a project license.
-- [ ] Define how to install and distribute the CLI.
-- [ ] Document configuration and JSON format versioning.
-- [ ] Define release criteria for version 1.0.
+- [x] Choose and add a project license.
+- [x] Define how to install and distribute the CLI.
+- [x] Document configuration and JSON format versioning.
+- [x] Define release criteria for version 1.0.
