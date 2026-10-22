@@ -48,7 +48,7 @@ Only populate fields actually supported by an adapter. Unknown values should rem
 
 ## Configuration
 
-The current `docweave.toml` config supports a title, optional description, source directory, Markdown, JSON, or HTML output path, optional hosted source URL, and include/exclude filters by file extension. The output extension selects the format. Relative config paths resolve from the config file's directory; CLI output overrides resolve from the working directory. Configuration is validated before scanning or writing. Visibility controls and strict mode remain future work.
+The current `docweave.toml` config supports a title, optional description, source directory, Markdown, JSON, or HTML output path, optional hosted source URL, and include/exclude filters by file extension. The output extension selects the format. Relative config paths resolve from the config file's directory; CLI output overrides resolve from the working directory. Configuration is validated before scanning or writing. JSON uses a versioned metadata envelope described in [JSON_FORMAT.md](JSON_FORMAT.md). Visibility controls and strict mode remain future work.
 
 PDF generation is deferred. The evaluation recommends prototyping an optional HTML-to-PDF path when users need PDF export; ordinary generation must not download or require a browser. See [PDF_OUTPUT_EVALUATION.md](PDF_OUTPUT_EVALUATION.md).
 

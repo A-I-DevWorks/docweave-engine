@@ -17,6 +17,7 @@ pub mod json;
 pub mod markdown;
 pub mod model;
 mod rust_extract;
+pub mod validate;
 
 pub use model::{
     Diagnostic, DiagnosticSeverity, DocFile, DocProject, DocSymbol, SourceSpan, SymbolKind,
@@ -168,6 +169,7 @@ pub fn generate_documentation(config: &config::Config) -> Result<PathBuf> {
                 .iter()
                 .any(|candidate| candidate == &extension)
     });
+    validate::append_consistency_diagnostics(&mut project);
     let parent = config.output.parent().unwrap_or(Path::new("."));
     std::fs::create_dir_all(parent)
         .with_context(|| format!("failed to create output directory {}", parent.display()))?;
@@ -188,7 +190,12 @@ pub fn generate_documentation(config: &config::Config) -> Result<PathBuf> {
             &output_parent,
             config.source_url.as_deref(),
         ),
-        Some("json") => json::render(&project)?,
+        Some("json") => json::render(
+            &project,
+            &config.title,
+            config.description.as_deref(),
+            config.source_url.as_deref(),
+        )?,
         Some("html") => html::render(
             &project,
             &config.title,

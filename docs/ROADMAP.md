@@ -48,10 +48,10 @@
 
 ## Milestone 7 — Prepare outputs for publishing
 
-- [ ] Add a generated landing page with navigation by file or module.
-- [ ] Improve HTML theme and navigation.
-- [ ] Add useful metadata to JSON and document its format.
-- [ ] Add consistency and security checks for source-derived content.
+- [x] Add a generated landing page with navigation by file or module.
+- [x] Improve HTML theme and navigation.
+- [x] Add useful metadata to JSON and document its format.
+- [x] Add consistency and security checks for source-derived content.
 
 ## Milestone 8 — Prepare for community language adapters
 

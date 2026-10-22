@@ -39,6 +39,34 @@ pub fn render(
             ));
         }
     }
+    let modules: Vec<_> = project
+        .files
+        .iter()
+        .enumerate()
+        .flat_map(|(file_index, file)| {
+            file.symbols
+                .iter()
+                .enumerate()
+                .filter(|(_, symbol)| symbol.kind == crate::model::SymbolKind::Module)
+                .map(move |(symbol_index, symbol)| (file_index, symbol_index, file, symbol))
+        })
+        .collect();
+    if !modules.is_empty() {
+        output.push_str("## Modules\n\n");
+        for (file_index, symbol_index, file, symbol) in modules {
+            output.push_str(&format!(
+                "- [{}](#{}) — {}\n",
+                code_span(&symbol.name),
+                anchors.symbols[file_index][symbol_index],
+                code_span(
+                    &project_relative_path(project, &file.path)
+                        .display()
+                        .to_string()
+                )
+            ));
+        }
+        output.push('\n');
+    }
     output.push('\n');
 
     for (file_index, file) in project.files.iter().enumerate() {
@@ -210,12 +238,19 @@ fn source_link(
 
 fn project_relative_path(project: &DocProject, path: &str) -> PathBuf {
     let path = Path::new(path);
-    if path.is_absolute() {
-        path.strip_prefix(Path::new(&project.root))
-            .map(Path::to_path_buf)
-            .unwrap_or_else(|_| path.to_path_buf())
+    let relative = if path.is_absolute() {
+        path.strip_prefix(Path::new(&project.root)).ok()
     } else {
-        path.to_path_buf()
+        Some(path)
+    };
+    if let Some(relative) = relative
+        && relative
+            .components()
+            .all(|component| matches!(component, Component::Normal(_) | Component::CurDir))
+    {
+        relative.to_path_buf()
+    } else {
+        PathBuf::from("source-unavailable")
     }
 }
 

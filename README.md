@@ -35,7 +35,7 @@ cargo run -- scan ./path/to/project
 
 The first build downloads dependencies from crates.io. Source files are parsed as data; DocWeave does not execute analyzed source code.
 
-Copy [docweave.toml.example](docweave.toml.example) to `docweave.toml`, edit its title and paths, then run `cargo run -- generate --config docweave.toml`. The output extension selects Markdown (`.md`), JSON (`.json`), or HTML (`.html`). Without a config file, generation uses the current directory as source and writes `docs.md`; `--output` can override the output file. Markdown and HTML include documentation comments, signatures, and parse diagnostics; JSON serializes the language-neutral model. HTML escapes source-derived text and treats raw HTML in doc comments as text. Set `source_url` to link to a hosted source repository instead of local files.
+Copy [docweave.toml.example](docweave.toml.example) to `docweave.toml`, edit its title and paths, then run `cargo run -- generate --config docweave.toml`. The output extension selects Markdown (`.md`), JSON (`.json`), or HTML (`.html`). Without a config file, generation uses the current directory as source and writes `docs.md`; `--output` can override the output file. Markdown and HTML include documentation comments, signatures, and parse diagnostics; JSON wraps the language-neutral model in a versioned metadata envelope. HTML escapes source-derived text and treats raw HTML in doc comments as text. Set `source_url` to link to a hosted source repository instead of local files.
 
 Create a config file such as `docweave.toml`:
 
@@ -63,7 +63,7 @@ docweave generate --config docweave.toml --output-dir ./site --include-extension
 
 `--output` selects a complete output path and format by extension; `--output-dir` preserves the configured filename and changes its directory. Use `docweave --help` or `docweave generate --help` for command options. Relative config paths resolve from the config file's directory; CLI output paths resolve from the current working directory. The output directory is created when needed. To check a checkout before publishing, run `cargo test`, then run `docweave scan ./path/to/project` and `docweave generate --config docweave.toml`.
 
-The supported languages currently have focused initial extraction coverage; see [the language adapter guide](docs/ADDING_LANGUAGE_ADAPTERS.md) for extensions, comment conventions, supported declarations, and how to add another adapter.
+The supported languages currently have focused initial extraction coverage; see [the language adapter guide](docs/ADDING_LANGUAGE_ADAPTERS.md) for extensions, comment conventions, supported declarations, and how to add another adapter. JSON output includes a versioned metadata envelope; see [the JSON format guide](docs/JSON_FORMAT.md).
 
 PDF generation is deferred; see the [PDF output evaluation](docs/PDF_OUTPUT_EVALUATION.md) for the current decision.
 
