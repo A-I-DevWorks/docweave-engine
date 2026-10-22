@@ -1,7 +1,18 @@
 # DocWeave API
 
+Reference documentation generated from the project source.
+
 ## Contents
 
+- [`examples/custom_adapter.rs`](#file-examples-custom-adapter-rs)
+  - [Struct `DemoAdapter`](#symbol-examples-custom-adapter-rs-struct-demoadapter)
+  - [Method `id`](#symbol-examples-custom-adapter-rs-method-id)
+  - [Method `extensions`](#symbol-examples-custom-adapter-rs-method-extensions)
+  - [Method `language`](#symbol-examples-custom-adapter-rs-method-language)
+  - [Method `extract`](#symbol-examples-custom-adapter-rs-method-extract)
+  - [Function `collect_functions`](#symbol-examples-custom-adapter-rs-function-collect-functions)
+  - [Function `leading_docs`](#symbol-examples-custom-adapter-rs-function-leading-docs)
+  - [Function `main`](#symbol-examples-custom-adapter-rs-function-main)
 - [`showcase/c_api.c`](#file-showcase-c-api-c)
   - [Function `multiply_values`](#symbol-showcase-c-api-c-function-multiply-values)
 - [`showcase/catalog.rs`](#file-showcase-catalog-rs)
@@ -100,8 +111,11 @@
   - [Constant `LUA`](#symbol-src-adapters-mod-rs-constant-lua)
   - [Constant `ADAPTERS`](#symbol-src-adapters-mod-rs-constant-adapters)
   - [Function `adapter_for_path`](#symbol-src-adapters-mod-rs-function-adapter-for-path)
+  - [Function `adapter_for_path_in`](#symbol-src-adapters-mod-rs-function-adapter-for-path-in)
   - [Function `adapter_by_id`](#symbol-src-adapters-mod-rs-function-adapter-by-id)
   - [Function `parser_for`](#symbol-src-adapters-mod-rs-function-parser-for)
+  - [Function `parser_for_in`](#symbol-src-adapters-mod-rs-function-parser-for-in)
+  - [Function `validate_registry`](#symbol-src-adapters-mod-rs-function-validate-registry)
   - [Function `diagnostics`](#symbol-src-adapters-mod-rs-function-diagnostics)
   - [Function `source_span`](#symbol-src-adapters-mod-rs-function-source-span)
   - [Function `node_text`](#symbol-src-adapters-mod-rs-function-node-text)
@@ -129,11 +143,15 @@
   - [Method `default`](#symbol-src-config-rs-method-default)
   - [Method `load`](#symbol-src-config-rs-method-load)
   - [Method `with_output`](#symbol-src-config-rs-method-with-output)
+  - [Method `with_output_dir`](#symbol-src-config-rs-method-with-output-dir)
+  - [Method `with_extension_filters`](#symbol-src-config-rs-method-with-extension-filters)
   - [Method `validate`](#symbol-src-config-rs-method-validate)
   - [Function `resolve`](#symbol-src-config-rs-function-resolve)
+  - [Function `normalize_extensions`](#symbol-src-config-rs-function-normalize-extensions)
   - [Module `tests`](#symbol-src-config-rs-module-tests)
   - [Function `loads_partial_config_and_resolves_paths_from_config_directory`](#symbol-src-config-rs-function-loads-partial-config-and-resolves-paths-from-config-directory)
   - [Function `rejects_unknown_keys_and_invalid_values`](#symbol-src-config-rs-function-rejects-unknown-keys-and-invalid-values)
+  - [Function `accepts_config_version_one_and_rejects_unknown_versions`](#symbol-src-config-rs-function-accepts-config-version-one-and-rejects-unknown-versions)
 - [`src/html.rs`](#file-src-html-rs)
   - [Function `render`](#symbol-src-html-rs-function-render)
   - [Function `render_markdown`](#symbol-src-html-rs-function-render-markdown)
@@ -142,10 +160,14 @@
   - [Function `kind_label`](#symbol-src-html-rs-function-kind-label)
   - [Function `syntax_language`](#symbol-src-html-rs-function-syntax-language)
   - [Function `source_link`](#symbol-src-html-rs-function-source-link)
+  - [Function `safe_project_path`](#symbol-src-html-rs-function-safe-project-path)
   - [Function `relative_path`](#symbol-src-html-rs-function-relative-path)
   - [Function `encode_path`](#symbol-src-html-rs-function-encode-path)
 - [`src/json.rs`](#file-src-json-rs)
   - [Function `render`](#symbol-src-json-rs-function-render)
+  - [Struct `JsonDocument`](#symbol-src-json-rs-struct-jsondocument)
+  - [Struct `Generator`](#symbol-src-json-rs-struct-generator)
+  - [Struct `Metadata`](#symbol-src-json-rs-struct-metadata)
 - [`src/lib.rs`](#file-src-lib-rs)
   - [Module `adapters`](#symbol-src-lib-rs-module-adapters)
   - [Module `config`](#symbol-src-lib-rs-module-config)
@@ -154,13 +176,17 @@
   - [Module `markdown`](#symbol-src-lib-rs-module-markdown)
   - [Module `model`](#symbol-src-lib-rs-module-model)
   - [Module `rust_extract`](#symbol-src-lib-rs-module-rust-extract)
+  - [Module `validate`](#symbol-src-lib-rs-module-validate)
   - [Struct `ParsedFile`](#symbol-src-lib-rs-struct-parsedfile)
   - [Function `scan_rust`](#symbol-src-lib-rs-function-scan-rust)
   - [Function `scan_project`](#symbol-src-lib-rs-function-scan-project)
+  - [Function `scan_project_with_adapters`](#symbol-src-lib-rs-function-scan-project-with-adapters)
   - [Function `scan_sources`](#symbol-src-lib-rs-function-scan-sources)
   - [Function `document_rust`](#symbol-src-lib-rs-function-document-rust)
   - [Function `document_project`](#symbol-src-lib-rs-function-document-project)
+  - [Function `document_project_with_adapters`](#symbol-src-lib-rs-function-document-project-with-adapters)
   - [Function `generate_documentation`](#symbol-src-lib-rs-function-generate-documentation)
+  - [Function `generate_documentation_with_adapters`](#symbol-src-lib-rs-function-generate-documentation-with-adapters)
   - [Function `generate_markdown`](#symbol-src-lib-rs-function-generate-markdown)
   - [Function `syntax_issue_count`](#symbol-src-lib-rs-function-syntax-issue-count)
   - [Module `tests`](#symbol-src-lib-rs-module-tests)
@@ -215,6 +241,52 @@
   - [Function `extracts_nested_items_generics_attributes_and_docs`](#symbol-src-rust-extract-rs-function-extracts-nested-items-generics-attributes-and-docs)
   - [Function `malformed_syntax_becomes_a_diagnostic`](#symbol-src-rust-extract-rs-function-malformed-syntax-becomes-a-diagnostic)
   - [Function `fixture_covers_nested_generics_attributes_and_doc_comments`](#symbol-src-rust-extract-rs-function-fixture-covers-nested-generics-attributes-and-doc-comments)
+- [`src/validate.rs`](#file-src-validate-rs)
+  - [Function `append_consistency_diagnostics`](#symbol-src-validate-rs-function-append-consistency-diagnostics)
+  - [Function `is_safe_relative_path`](#symbol-src-validate-rs-function-is-safe-relative-path)
+  - [Function `valid_span`](#symbol-src-validate-rs-function-valid-span)
+  - [Function `check_markdown`](#symbol-src-validate-rs-function-check-markdown)
+  - [Function `check_control_characters`](#symbol-src-validate-rs-function-check-control-characters)
+  - [Function `warning`](#symbol-src-validate-rs-function-warning)
+  - [Module `tests`](#symbol-src-validate-rs-module-tests)
+  - [Function `reports_unsafe_paths_inconsistent_spans_and_control_characters`](#symbol-src-validate-rs-function-reports-unsafe-paths-inconsistent-spans-and-control-characters)
+- [`tests/adapter_fixtures.rs`](#file-tests-adapter-fixtures-rs)
+  - [Function `extract`](#symbol-tests-adapter-fixtures-rs-function-extract)
+  - [Function `rust_fixture_covers_documented_and_undocumented_declarations`](#symbol-tests-adapter-fixtures-rs-function-rust-fixture-covers-documented-and-undocumented-declarations)
+  - [Function `symbol`](#symbol-tests-adapter-fixtures-rs-function-symbol)
+  - [Function `c_fixture_covers_file_docs_complex_signature_and_undocumented_declarations`](#symbol-tests-adapter-fixtures-rs-function-c-fixture-covers-file-docs-complex-signature-and-undocumented-declarations)
+  - [Function `cpp_fixture_covers_nested_scopes_and_complex_signatures`](#symbol-tests-adapter-fixtures-rs-function-cpp-fixture-covers-nested-scopes-and-complex-signatures)
+  - [Function `python_fixture_covers_docstrings_constants_methods_and_missing_docs`](#symbol-tests-adapter-fixtures-rs-function-python-fixture-covers-docstrings-constants-methods-and-missing-docs)
+  - [Function `lua_fixture_covers_doc_comments_methods_and_nested_code`](#symbol-tests-adapter-fixtures-rs-function-lua-fixture-covers-doc-comments-methods-and-nested-code)
+  - [Function `malformed_non_rust_fixtures_emit_source_located_diagnostics`](#symbol-tests-adapter-fixtures-rs-function-malformed-non-rust-fixtures-emit-source-located-diagnostics)
+- [`tests/custom_adapters.rs`](#file-tests-custom-adapters-rs)
+  - [Struct `DemoAdapter`](#symbol-tests-custom-adapters-rs-struct-demoadapter)
+  - [Method `id`](#symbol-tests-custom-adapters-rs-method-id)
+  - [Method `extensions`](#symbol-tests-custom-adapters-rs-method-extensions)
+  - [Method `language`](#symbol-tests-custom-adapters-rs-method-language)
+  - [Method `extract`](#symbol-tests-custom-adapters-rs-method-extract)
+  - [Function `caller_supplied_adapter_can_scan_and_extract_a_new_extension`](#symbol-tests-custom-adapters-rs-function-caller-supplied-adapter-can-scan-and-extract-a-new-extension)
+  - [Function `adapter_registry_rejects_duplicate_extensions`](#symbol-tests-custom-adapters-rs-function-adapter-registry-rejects-duplicate-extensions)
+- [`tests/fixtures/adapter_c.c`](#file-tests-fixtures-adapter-c-c)
+  - [Function `add_into`](#symbol-tests-fixtures-adapter-c-c-function-add-into)
+  - [Function `undocumented`](#symbol-tests-fixtures-adapter-c-c-function-undocumented)
+  - [Struct `Entry`](#symbol-tests-fixtures-adapter-c-c-struct-entry)
+- [`tests/fixtures/adapter_cpp.cpp`](#file-tests-fixtures-adapter-cpp-cpp)
+  - [Module `api`](#symbol-tests-fixtures-adapter-cpp-cpp-module-api)
+  - [Struct `Store`](#symbol-tests-fixtures-adapter-cpp-cpp-struct-store)
+  - [Method `find`](#symbol-tests-fixtures-adapter-cpp-cpp-method-find)
+  - [Function `undocumented_cpp`](#symbol-tests-fixtures-adapter-cpp-cpp-function-undocumented-cpp)
+- [`tests/fixtures/adapter_lua.lua`](#file-tests-fixtures-adapter-lua-lua)
+  - [Function `api.add`](#symbol-tests-fixtures-adapter-lua-lua-function-api-add)
+  - [Function `nested`](#symbol-tests-fixtures-adapter-lua-lua-function-nested)
+  - [Method `api:label`](#symbol-tests-fixtures-adapter-lua-lua-method-api-label)
+  - [Function `undocumented`](#symbol-tests-fixtures-adapter-lua-lua-function-undocumented)
+- [`tests/fixtures/adapter_python.py`](#file-tests-fixtures-adapter-python-py)
+  - [Constant `MAX_SIZE`](#symbol-tests-fixtures-adapter-python-py-constant-max-size)
+  - [Struct `Store`](#symbol-tests-fixtures-adapter-python-py-struct-store)
+  - [Method `find`](#symbol-tests-fixtures-adapter-python-py-method-find)
+  - [Method `undocumented`](#symbol-tests-fixtures-adapter-python-py-method-undocumented)
+  - [Function `normalize`](#symbol-tests-fixtures-adapter-python-py-function-normalize)
 - [`tests/fixtures/malformed.rs`](#file-tests-fixtures-malformed-rs)
 - [`tests/fixtures/nested_generics.rs`](#file-tests-fixtures-nested-generics-rs)
   - [Module `outer`](#symbol-tests-fixtures-nested-generics-rs-module-outer)
@@ -228,6 +300,111 @@
 - [`tests/generate_markdown.rs`](#file-tests-generate-markdown-rs)
   - [Function `cli_generates_markdown_with_anchors_docs_and_source_links`](#symbol-tests-generate-markdown-rs-function-cli-generates-markdown-with-anchors-docs-and-source-links)
   - [Function `cli_rejects_invalid_configuration_without_creating_output`](#symbol-tests-generate-markdown-rs-function-cli-rejects-invalid-configuration-without-creating-output)
+  - [Function `cli_applies_output_directory_metadata_and_file_extension_filters`](#symbol-tests-generate-markdown-rs-function-cli-applies-output-directory-metadata-and-file-extension-filters)
+  - [Function `cli_json_output_includes_version_and_project_metadata`](#symbol-tests-generate-markdown-rs-function-cli-json-output-includes-version-and-project-metadata)
+  - [Function `html_output_has_file_and_module_navigation_and_blocks_unsafe_source_content`](#symbol-tests-generate-markdown-rs-function-html-output-has-file-and-module-navigation-and-blocks-unsafe-source-content)
+  - [Function `all_output_formats_are_deterministic_for_repeated_runs`](#symbol-tests-generate-markdown-rs-function-all-output-formats-are-deterministic-for-repeated-runs)
+## Modules
+
+- [`examples`](#symbol-showcase-cpp-api-cpp-module-examples) — `showcase/cpp_api.cpp`
+- [`catalog`](#symbol-showcase-lib-rs-module-catalog) — `showcase/lib.rs`
+- [`service`](#symbol-showcase-lib-rs-module-service) — `showcase/lib.rs`
+- [`markdown_examples`](#symbol-showcase-lib-rs-module-markdown-examples) — `showcase/lib.rs`
+- [`c_like`](#symbol-src-adapters-mod-rs-module-c-like) — `src/adapters/mod.rs`
+- [`lua`](#symbol-src-adapters-mod-rs-module-lua) — `src/adapters/mod.rs`
+- [`python`](#symbol-src-adapters-mod-rs-module-python) — `src/adapters/mod.rs`
+- [`rust`](#symbol-src-adapters-mod-rs-module-rust) — `src/adapters/mod.rs`
+- [`tests`](#symbol-src-config-rs-module-tests) — `src/config.rs`
+- [`adapters`](#symbol-src-lib-rs-module-adapters) — `src/lib.rs`
+- [`config`](#symbol-src-lib-rs-module-config) — `src/lib.rs`
+- [`html`](#symbol-src-lib-rs-module-html) — `src/lib.rs`
+- [`json`](#symbol-src-lib-rs-module-json) — `src/lib.rs`
+- [`markdown`](#symbol-src-lib-rs-module-markdown) — `src/lib.rs`
+- [`model`](#symbol-src-lib-rs-module-model) — `src/lib.rs`
+- [`rust_extract`](#symbol-src-lib-rs-module-rust-extract) — `src/lib.rs`
+- [`validate`](#symbol-src-lib-rs-module-validate) — `src/lib.rs`
+- [`tests`](#symbol-src-lib-rs-module-tests) — `src/lib.rs`
+- [`tests`](#symbol-src-markdown-rs-module-tests) — `src/markdown.rs`
+- [`tests`](#symbol-src-rust-extract-rs-module-tests) — `src/rust_extract.rs`
+- [`tests`](#symbol-src-validate-rs-module-tests) — `src/validate.rs`
+- [`api`](#symbol-tests-fixtures-adapter-cpp-cpp-module-api) — `tests/fixtures/adapter_cpp.cpp`
+- [`outer`](#symbol-tests-fixtures-nested-generics-rs-module-outer) — `tests/fixtures/nested_generics.rs`
+
+
+<a id="file-examples-custom-adapter-rs"></a>
+## `examples/custom_adapter.rs`
+
+<a id="symbol-examples-custom-adapter-rs-struct-demoadapter"></a>
+### Struct: `DemoAdapter`
+
+```rust
+struct DemoAdapter;
+```
+
+[View source](../examples/custom_adapter.rs#L10)
+
+<a id="symbol-examples-custom-adapter-rs-method-id"></a>
+### Method: `id`
+
+```rust
+fn id(&self) -> &'static str
+```
+
+[View source](../examples/custom_adapter.rs#L13)
+
+<a id="symbol-examples-custom-adapter-rs-method-extensions"></a>
+### Method: `extensions`
+
+```rust
+fn extensions(&self) -> &'static [&'static str]
+```
+
+[View source](../examples/custom_adapter.rs#L17)
+
+<a id="symbol-examples-custom-adapter-rs-method-language"></a>
+### Method: `language`
+
+```rust
+fn language(&self) -> Language
+```
+
+[View source](../examples/custom_adapter.rs#L21)
+
+<a id="symbol-examples-custom-adapter-rs-method-extract"></a>
+### Method: `extract`
+
+```rust
+fn extract(&self, path: &Path, source: &str, tree: &Tree) -> DocFile
+```
+
+[View source](../examples/custom_adapter.rs#L25)
+
+<a id="symbol-examples-custom-adapter-rs-function-collect-functions"></a>
+### Function: `collect_functions`
+
+```rust
+fn collect_functions(node: Node<'_>, source: &str, path: &str, out: &mut Vec<DocSymbol>)
+```
+
+[View source](../examples/custom_adapter.rs#L38)
+
+<a id="symbol-examples-custom-adapter-rs-function-leading-docs"></a>
+### Function: `leading_docs`
+
+```rust
+fn leading_docs(node: Node<'_>, source: &str) -> Option<String>
+```
+
+[View source](../examples/custom_adapter.rs#L64)
+
+<a id="symbol-examples-custom-adapter-rs-function-main"></a>
+### Function: `main`
+
+```rust
+fn main() -> anyhow::Result<()>
+```
+
+[View source](../examples/custom_adapter.rs#L79)
 
 <a id="file-showcase-c-api-c"></a>
 ## `showcase/c_api.c`
@@ -596,6 +773,11 @@ pub mod markdown_examples;
 Exemplos de sintaxe Markdown em comentários de documentação.
 
 [View source](../showcase/lib.rs#L17)
+
+### Diagnostics
+
+- `content.unsafe_link` — Documentation contains a link with a URL scheme that HTML export blocks.
+- `content.unsafe_link` — Documentation contains a link with a URL scheme that HTML export blocks.
 
 <a id="file-showcase-markdown-examples-rs"></a>
 ## `showcase/markdown_examples.rs`
@@ -1122,12 +1304,14 @@ mod rust;
 pub trait LanguageAdapter: Sync
 ```
 
-Contract for a language implementation registered with the source scanner.
+Stable extension point for a source language supported by DocWeave.
 
-An adapter owns file extensions, Tree-sitter grammar selection, and the
-mapping from that grammar's nodes and comments into the shared model.
+Adapters own grammar-specific syntax and documentation conventions. They
+must return source-relative paths, one-based source spans with exclusive
+ends, and only facts supported by the syntax tree. Use the shared helpers
+below to keep parse diagnostics and span behavior consistent.
 
-[View source](../src/adapters/mod.rs#L18)
+[View source](../src/adapters/mod.rs#L20)
 
 <a id="symbol-src-adapters-mod-rs-method-id"></a>
 ### Method: `id`
@@ -1138,7 +1322,7 @@ fn id(&self) -> &'static str;
 
 Stable identifier used in diagnostics and the adapter registry.
 
-[View source](../src/adapters/mod.rs#L20)
+[View source](../src/adapters/mod.rs#L22)
 
 <a id="symbol-src-adapters-mod-rs-method-extensions"></a>
 ### Method: `extensions`
@@ -1149,7 +1333,7 @@ fn extensions(&self) -> &'static [&'static str];
 
 File extensions handled by this adapter, without a leading dot.
 
-[View source](../src/adapters/mod.rs#L23)
+[View source](../src/adapters/mod.rs#L25)
 
 <a id="symbol-src-adapters-mod-rs-method-language"></a>
 ### Method: `language`
@@ -1160,7 +1344,7 @@ fn language(&self) -> Language;
 
 Return the Tree-sitter grammar for this language.
 
-[View source](../src/adapters/mod.rs#L26)
+[View source](../src/adapters/mod.rs#L28)
 
 <a id="symbol-src-adapters-mod-rs-method-extract"></a>
 ### Method: `extract`
@@ -1171,7 +1355,7 @@ fn extract(&self, path: &Path, source: &str, tree: &Tree) -> DocFile;
 
 Extract one parsed file into the language-neutral model.
 
-[View source](../src/adapters/mod.rs#L29)
+[View source](../src/adapters/mod.rs#L31)
 
 <a id="symbol-src-adapters-mod-rs-constant-rust"></a>
 ### Constant: `RUST`
@@ -1180,7 +1364,7 @@ Extract one parsed file into the language-neutral model.
 static RUST: rust::RustAdapter = rust::RustAdapter;
 ```
 
-[View source](../src/adapters/mod.rs#L32)
+[View source](../src/adapters/mod.rs#L34)
 
 <a id="symbol-src-adapters-mod-rs-constant-c"></a>
 ### Constant: `C`
@@ -1189,7 +1373,7 @@ static RUST: rust::RustAdapter = rust::RustAdapter;
 static C: c_like::CAdapter = c_like::CAdapter;
 ```
 
-[View source](../src/adapters/mod.rs#L33)
+[View source](../src/adapters/mod.rs#L35)
 
 <a id="symbol-src-adapters-mod-rs-constant-cpp"></a>
 ### Constant: `CPP`
@@ -1198,7 +1382,7 @@ static C: c_like::CAdapter = c_like::CAdapter;
 static CPP: c_like::CppAdapter = c_like::CppAdapter;
 ```
 
-[View source](../src/adapters/mod.rs#L34)
+[View source](../src/adapters/mod.rs#L36)
 
 <a id="symbol-src-adapters-mod-rs-constant-python"></a>
 ### Constant: `PYTHON`
@@ -1207,7 +1391,7 @@ static CPP: c_like::CppAdapter = c_like::CppAdapter;
 static PYTHON: python::PythonAdapter = python::PythonAdapter;
 ```
 
-[View source](../src/adapters/mod.rs#L35)
+[View source](../src/adapters/mod.rs#L37)
 
 <a id="symbol-src-adapters-mod-rs-constant-lua"></a>
 ### Constant: `LUA`
@@ -1216,7 +1400,7 @@ static PYTHON: python::PythonAdapter = python::PythonAdapter;
 static LUA: lua::LuaAdapter = lua::LuaAdapter;
 ```
 
-[View source](../src/adapters/mod.rs#L36)
+[View source](../src/adapters/mod.rs#L38)
 
 <a id="symbol-src-adapters-mod-rs-constant-adapters"></a>
 ### Constant: `ADAPTERS`
@@ -1227,7 +1411,7 @@ pub static ADAPTERS: [&dyn LanguageAdapter; 5] = [&RUST, &C, &CPP, &PYTHON, &LUA
 
 Built-in adapters in deterministic extension-dispatch order.
 
-[View source](../src/adapters/mod.rs#L39)
+[View source](../src/adapters/mod.rs#L41)
 
 <a id="symbol-src-adapters-mod-rs-function-adapter-for-path"></a>
 ### Function: `adapter_for_path`
@@ -1238,7 +1422,21 @@ pub fn adapter_for_path(path: &Path) -> Option<&'static dyn LanguageAdapter>
 
 Find the registered adapter responsible for a source path.
 
-[View source](../src/adapters/mod.rs#L42)
+[View source](../src/adapters/mod.rs#L44)
+
+<a id="symbol-src-adapters-mod-rs-function-adapter-for-path-in"></a>
+### Function: `adapter_for_path_in`
+
+```rust
+pub fn adapter_for_path_in<'a>(
+    path: &Path,
+    adapters: &'a [&dyn LanguageAdapter],
+) -> Option<&'a dyn LanguageAdapter>
+```
+
+Find the adapter responsible for a path in a caller-supplied registry.
+
+[View source](../src/adapters/mod.rs#L49)
 
 <a id="symbol-src-adapters-mod-rs-function-adapter-by-id"></a>
 ### Function: `adapter_by_id`
@@ -1249,7 +1447,7 @@ pub fn adapter_by_id(id: &str) -> Option<&'static dyn LanguageAdapter>
 
 Find a registered adapter by its stable identifier.
 
-[View source](../src/adapters/mod.rs#L53)
+[View source](../src/adapters/mod.rs#L63)
 
 <a id="symbol-src-adapters-mod-rs-function-parser-for"></a>
 ### Function: `parser_for`
@@ -1260,7 +1458,32 @@ pub fn parser_for(path: &Path) -> anyhow::Result<Option<(Parser, &'static dyn La
 
 Configure a parser for the adapter selected by a source file extension.
 
-[View source](../src/adapters/mod.rs#L58)
+[View source](../src/adapters/mod.rs#L68)
+
+<a id="symbol-src-adapters-mod-rs-function-parser-for-in"></a>
+### Function: `parser_for_in`
+
+```rust
+pub fn parser_for_in<'a>(
+    path: &Path,
+    adapters: &'a [&dyn LanguageAdapter],
+) -> anyhow::Result<Option<(Parser, &'a dyn LanguageAdapter)>>
+```
+
+Configure a parser using a caller-supplied adapter registry.
+
+[View source](../src/adapters/mod.rs#L73)
+
+<a id="symbol-src-adapters-mod-rs-function-validate-registry"></a>
+### Function: `validate_registry`
+
+```rust
+pub fn validate_registry(adapters: &[&dyn LanguageAdapter]) -> anyhow::Result<()>
+```
+
+Validate identifiers and extensions in an adapter registry.
+
+[View source](../src/adapters/mod.rs#L89)
 
 <a id="symbol-src-adapters-mod-rs-function-diagnostics"></a>
 ### Function: `diagnostics`
@@ -1271,7 +1494,7 @@ pub fn diagnostics(root: Node<'_>, path: &str, language: &str) -> Vec<Diagnostic
 
 Produce stable parse diagnostics shared by the built-in adapters.
 
-[View source](../src/adapters/mod.rs#L71)
+[View source](../src/adapters/mod.rs#L121)
 
 <a id="symbol-src-adapters-mod-rs-function-source-span"></a>
 ### Function: `source_span`
@@ -1282,7 +1505,7 @@ pub fn source_span(node: Node<'_>, path: &str) -> SourceSpan
 
 Extract a one-based source range from a syntax node.
 
-[View source](../src/adapters/mod.rs#L109)
+[View source](../src/adapters/mod.rs#L159)
 
 <a id="symbol-src-adapters-mod-rs-function-node-text"></a>
 ### Function: `node_text`
@@ -1293,7 +1516,7 @@ pub fn node_text<'a>(node: Node<'_>, source: &'a str) -> Option<&'a str>
 
 Read a node's source text without panicking on invalid UTF-8 boundaries.
 
-[View source](../src/adapters/mod.rs#L122)
+[View source](../src/adapters/mod.rs#L172)
 
 <a id="file-src-adapters-python-rs"></a>
 ## `src/adapters/python.rs`
@@ -1477,7 +1700,7 @@ Validated settings for a documentation generation run.
 struct FileConfig
 ```
 
-[View source](../src/config.rs#L19)
+[View source](../src/config.rs#L22)
 
 <a id="symbol-src-config-rs-method-default"></a>
 ### Method: `default`
@@ -1486,7 +1709,7 @@ struct FileConfig
 fn default() -> Self
 ```
 
-[View source](../src/config.rs#L27)
+[View source](../src/config.rs#L34)
 
 <a id="symbol-src-config-rs-method-load"></a>
 ### Method: `load`
@@ -1498,7 +1721,7 @@ pub fn load(path: Option<&Path>) -> Result<Self>
 Load and validate a TOML file. Relative paths are resolved from its directory.
 If no path is supplied, use defaults rooted at the current working directory.
 
-[View source](../src/config.rs#L40)
+[View source](../src/config.rs#L51)
 
 <a id="symbol-src-config-rs-method-with-output"></a>
 ### Method: `with_output`
@@ -1509,7 +1732,33 @@ pub fn with_output(mut self, output: PathBuf) -> Result<Self>
 
 Override the output path, resolving relative values from the current directory.
 
-[View source](../src/config.rs#L73)
+[View source](../src/config.rs#L93)
+
+<a id="symbol-src-config-rs-method-with-output-dir"></a>
+### Method: `with_output_dir`
+
+```rust
+pub fn with_output_dir(mut self, directory: PathBuf) -> Result<Self>
+```
+
+Set the output directory while preserving the configured output filename.
+
+[View source](../src/config.rs#L104)
+
+<a id="symbol-src-config-rs-method-with-extension-filters"></a>
+### Method: `with_extension_filters`
+
+```rust
+pub fn with_extension_filters(
+        mut self,
+        include: Option<Vec<String>>,
+        exclude: Option<Vec<String>>,
+    ) -> Result<Self>
+```
+
+Override configured extension filters from CLI values when supplied.
+
+[View source](../src/config.rs#L122)
 
 <a id="symbol-src-config-rs-method-validate"></a>
 ### Method: `validate`
@@ -1520,7 +1769,7 @@ pub fn validate(&self) -> Result<()>
 
 Validate all public settings before a generation run.
 
-[View source](../src/config.rs#L84)
+[View source](../src/config.rs#L138)
 
 <a id="symbol-src-config-rs-function-resolve"></a>
 ### Function: `resolve`
@@ -1529,7 +1778,16 @@ Validate all public settings before a generation run.
 fn resolve(base: &Path, path: PathBuf) -> PathBuf
 ```
 
-[View source](../src/config.rs#L120)
+[View source](../src/config.rs#L194)
+
+<a id="symbol-src-config-rs-function-normalize-extensions"></a>
+### Function: `normalize_extensions`
+
+```rust
+fn normalize_extensions(extensions: Vec<String>) -> Vec<String>
+```
+
+[View source](../src/config.rs#L202)
 
 <a id="symbol-src-config-rs-module-tests"></a>
 ### Module: `tests`
@@ -1538,7 +1796,7 @@ fn resolve(base: &Path, path: PathBuf) -> PathBuf
 mod tests
 ```
 
-[View source](../src/config.rs#L129)
+[View source](../src/config.rs#L215)
 
 <a id="symbol-src-config-rs-function-loads-partial-config-and-resolves-paths-from-config-directory"></a>
 ### Function: `loads_partial_config_and_resolves_paths_from_config_directory`
@@ -1547,7 +1805,7 @@ mod tests
 fn loads_partial_config_and_resolves_paths_from_config_directory()
 ```
 
-[View source](../src/config.rs#L133)
+[View source](../src/config.rs#L219)
 
 <a id="symbol-src-config-rs-function-rejects-unknown-keys-and-invalid-values"></a>
 ### Function: `rejects_unknown_keys_and_invalid_values`
@@ -1556,7 +1814,16 @@ fn loads_partial_config_and_resolves_paths_from_config_directory()
 fn rejects_unknown_keys_and_invalid_values()
 ```
 
-[View source](../src/config.rs#L155)
+[View source](../src/config.rs#L241)
+
+<a id="symbol-src-config-rs-function-accepts-config-version-one-and-rejects-unknown-versions"></a>
+### Function: `accepts_config_version_one_and_rejects_unknown_versions`
+
+```rust
+fn accepts_config_version_one_and_rejects_unknown_versions()
+```
+
+[View source](../src/config.rs#L252)
 
 <a id="file-src-html-rs"></a>
 ## `src/html.rs`
@@ -1570,6 +1837,7 @@ HTML renderer with escaped source text and safe Markdown conversion.
 pub fn render(
     project: &DocProject,
     title: &str,
+    description: Option<&str>,
     output_parent: &Path,
     source_url: Option<&str>,
 ) -> String
@@ -1586,16 +1854,16 @@ Render a project as a self-contained HTML document.
 fn render_markdown(markdown: &str) -> String
 ```
 
-[View source](../src/html.rs#L100)
+[View source](../src/html.rs#L130)
 
 <a id="symbol-src-html-rs-function-safe-url"></a>
 ### Function: `safe_url`
 
 ```rust
-fn safe_url(url: &str) -> bool
+pub(crate) fn safe_url(url: &str) -> bool
 ```
 
-[View source](../src/html.rs#L144)
+[View source](../src/html.rs#L174)
 
 <a id="symbol-src-html-rs-function-escape-html"></a>
 ### Function: `escape_html`
@@ -1604,7 +1872,7 @@ fn safe_url(url: &str) -> bool
 fn escape_html(value: &str) -> String
 ```
 
-[View source](../src/html.rs#L162)
+[View source](../src/html.rs#L192)
 
 <a id="symbol-src-html-rs-function-kind-label"></a>
 ### Function: `kind_label`
@@ -1613,7 +1881,7 @@ fn escape_html(value: &str) -> String
 fn kind_label(kind: crate::model::SymbolKind) -> &'static str
 ```
 
-[View source](../src/html.rs#L171)
+[View source](../src/html.rs#L201)
 
 <a id="symbol-src-html-rs-function-syntax-language"></a>
 ### Function: `syntax_language`
@@ -1622,7 +1890,7 @@ fn kind_label(kind: crate::model::SymbolKind) -> &'static str
 fn syntax_language(path: &str) -> &'static str
 ```
 
-[View source](../src/html.rs#L183)
+[View source](../src/html.rs#L213)
 
 <a id="symbol-src-html-rs-function-source-link"></a>
 ### Function: `source_link`
@@ -1636,7 +1904,16 @@ fn source_link(
 ) -> String
 ```
 
-[View source](../src/html.rs#L200)
+[View source](../src/html.rs#L230)
+
+<a id="symbol-src-html-rs-function-safe-project-path"></a>
+### Function: `safe_project_path`
+
+```rust
+fn safe_project_path(project: &DocProject, path: &str) -> std::path::PathBuf
+```
+
+[View source](../src/html.rs#L247)
 
 <a id="symbol-src-html-rs-function-relative-path"></a>
 ### Function: `relative_path`
@@ -1645,7 +1922,7 @@ fn source_link(
 fn relative_path(from: &Path, to: &Path) -> std::path::PathBuf
 ```
 
-[View source](../src/html.rs#L221)
+[View source](../src/html.rs#L265)
 
 <a id="symbol-src-html-rs-function-encode-path"></a>
 ### Function: `encode_path`
@@ -1654,7 +1931,7 @@ fn relative_path(from: &Path, to: &Path) -> std::path::PathBuf
 fn encode_path(path: &Path) -> String
 ```
 
-[View source](../src/html.rs#L241)
+[View source](../src/html.rs#L285)
 
 <a id="file-src-json-rs"></a>
 ## `src/json.rs`
@@ -1665,21 +1942,53 @@ JSON renderer for the language-neutral documentation model.
 ### Function: `render`
 
 ```rust
-pub fn render(project: &DocProject) -> Result<String>
+pub fn render(
+    project: &DocProject,
+    title: &str,
+    description: Option<&str>,
+    source_url: Option<&str>,
+) -> Result<String>
 ```
 
-Serialize a project model as pretty-printed JSON.
+Serialize a versioned documentation document as pretty-printed JSON.
 
-[View source](../src/json.rs#L8)
+[View source](../src/json.rs#L9)
+
+<a id="symbol-src-json-rs-struct-jsondocument"></a>
+### Struct: `JsonDocument`
+
+```rust
+struct JsonDocument<'a>
+```
+
+[View source](../src/json.rs#L32)
+
+<a id="symbol-src-json-rs-struct-generator"></a>
+### Struct: `Generator`
+
+```rust
+struct Generator
+```
+
+[View source](../src/json.rs#L40)
+
+<a id="symbol-src-json-rs-struct-metadata"></a>
+### Struct: `Metadata`
+
+```rust
+struct Metadata<'a>
+```
+
+[View source](../src/json.rs#L46)
 
 <a id="file-src-lib-rs"></a>
 ## `src/lib.rs`
 
 Core library for DocWeave Engine.
 
-The first milestone validates the Tree-sitter parsing pipeline for Rust.
-Documentation extraction and language-neutral rendering will be layered on
-top of this API in subsequent milestones.
+Provides Tree-sitter source discovery, built-in and caller-supplied language
+adapters, a language-neutral documentation model, and Markdown, JSON, and
+HTML generation.
 
 <a id="symbol-src-lib-rs-module-adapters"></a>
 ### Module: `adapters`
@@ -1744,6 +2053,15 @@ mod rust_extract;
 
 [View source](../src/lib.rs#L19)
 
+<a id="symbol-src-lib-rs-module-validate"></a>
+### Module: `validate`
+
+```rust
+pub mod validate;
+```
+
+[View source](../src/lib.rs#L20)
+
 <a id="symbol-src-lib-rs-struct-parsedfile"></a>
 ### Struct: `ParsedFile`
 
@@ -1753,7 +2071,7 @@ pub struct ParsedFile
 
 A source file discovered and parsed by DocWeave.
 
-[View source](../src/lib.rs#L27)
+[View source](../src/lib.rs#L28)
 
 <a id="symbol-src-lib-rs-function-scan-rust"></a>
 ### Function: `scan_rust`
@@ -1767,7 +2085,7 @@ Recursively discover Rust files and parse them with Tree-sitter.
 Directories commonly containing generated files or dependencies are skipped.
 Individual unreadable or malformed files return an error with path context.
 
-[View source](../src/lib.rs#L39)
+[View source](../src/lib.rs#L40)
 
 <a id="symbol-src-lib-rs-function-scan-project"></a>
 ### Function: `scan_project`
@@ -1779,16 +2097,34 @@ pub fn scan_project(root: &Path) -> Result<Vec<ParsedFile>>
 Recursively discover supported C, C++, Python, Lua, and Rust files and parse
 each file with its registered Tree-sitter adapter.
 
-[View source](../src/lib.rs#L45)
+[View source](../src/lib.rs#L46)
+
+<a id="symbol-src-lib-rs-function-scan-project-with-adapters"></a>
+### Function: `scan_project_with_adapters`
+
+```rust
+pub fn scan_project_with_adapters(
+    root: &Path,
+    registered_adapters: &[&dyn adapters::LanguageAdapter],
+) -> Result<Vec<ParsedFile>>
+```
+
+Scan supported files using an explicit adapter registry.
+
+[View source](../src/lib.rs#L51)
 
 <a id="symbol-src-lib-rs-function-scan-sources"></a>
 ### Function: `scan_sources`
 
 ```rust
-fn scan_sources(root: &Path, only_adapter: Option<&str>) -> Result<Vec<ParsedFile>>
+fn scan_sources(
+    root: &Path,
+    only_adapter: Option<&str>,
+    registered_adapters: &[&dyn adapters::LanguageAdapter],
+) -> Result<Vec<ParsedFile>>
 ```
 
-[View source](../src/lib.rs#L49)
+[View source](../src/lib.rs#L59)
 
 <a id="symbol-src-lib-rs-function-document-rust"></a>
 ### Function: `document_rust`
@@ -1799,7 +2135,7 @@ pub fn document_rust(root: &Path) -> Result<DocProject>
 
 Scan a Rust project and extract its language-neutral documentation model.
 
-[View source](../src/lib.rs#L106)
+[View source](../src/lib.rs#L128)
 
 <a id="symbol-src-lib-rs-function-document-project"></a>
 ### Function: `document_project`
@@ -1810,7 +2146,21 @@ pub fn document_project(root: &Path) -> Result<DocProject>
 
 Scan all supported source languages and extract the shared documentation model.
 
-[View source](../src/lib.rs#L125)
+[View source](../src/lib.rs#L147)
+
+<a id="symbol-src-lib-rs-function-document-project-with-adapters"></a>
+### Function: `document_project_with_adapters`
+
+```rust
+pub fn document_project_with_adapters(
+    root: &Path,
+    registered_adapters: &[&dyn adapters::LanguageAdapter],
+) -> Result<DocProject>
+```
+
+Scan and extract a project using an explicit adapter registry.
+
+[View source](../src/lib.rs#L152)
 
 <a id="symbol-src-lib-rs-function-generate-documentation"></a>
 ### Function: `generate_documentation`
@@ -1821,7 +2171,21 @@ pub fn generate_documentation(config: &config::Config) -> Result<PathBuf>
 
 Generate documentation in the format selected by the output extension.
 
-[View source](../src/lib.rs#L145)
+[View source](../src/lib.rs#L180)
+
+<a id="symbol-src-lib-rs-function-generate-documentation-with-adapters"></a>
+### Function: `generate_documentation_with_adapters`
+
+```rust
+pub fn generate_documentation_with_adapters(
+    config: &config::Config,
+    registered_adapters: &[&dyn adapters::LanguageAdapter],
+) -> Result<PathBuf>
+```
+
+Generate documentation using an explicit adapter registry.
+
+[View source](../src/lib.rs#L185)
 
 <a id="symbol-src-lib-rs-function-generate-markdown"></a>
 ### Function: `generate_markdown`
@@ -1832,7 +2196,7 @@ pub fn generate_markdown(config: &config::Config) -> Result<PathBuf>
 
 Generate Markdown documentation using validated configuration.
 
-[View source](../src/lib.rs#L186)
+[View source](../src/lib.rs#L255)
 
 <a id="symbol-src-lib-rs-function-syntax-issue-count"></a>
 ### Function: `syntax_issue_count`
@@ -1843,7 +2207,7 @@ pub fn syntax_issue_count(tree: &Tree) -> usize
 
 Count syntax error and missing nodes in a parsed syntax tree.
 
-[View source](../src/lib.rs#L198)
+[View source](../src/lib.rs#L267)
 
 <a id="symbol-src-lib-rs-module-tests"></a>
 ### Module: `tests`
@@ -1852,7 +2216,7 @@ Count syntax error and missing nodes in a parsed syntax tree.
 mod tests
 ```
 
-[View source](../src/lib.rs#L218)
+[View source](../src/lib.rs#L287)
 
 <a id="symbol-src-lib-rs-function-scans-and-parses-rust-files"></a>
 ### Function: `scans_and_parses_rust_files`
@@ -1861,7 +2225,7 @@ mod tests
 fn scans_and_parses_rust_files()
 ```
 
-[View source](../src/lib.rs#L224)
+[View source](../src/lib.rs#L293)
 
 <a id="symbol-src-lib-rs-function-detects-invalid-rust-syntax"></a>
 ### Function: `detects_invalid_rust_syntax`
@@ -1870,7 +2234,7 @@ fn scans_and_parses_rust_files()
 fn detects_invalid_rust_syntax()
 ```
 
-[View source](../src/lib.rs#L243)
+[View source](../src/lib.rs#L312)
 
 <a id="symbol-src-lib-rs-function-builds-a-project-documentation-model"></a>
 ### Function: `builds_a_project_documentation_model`
@@ -1879,7 +2243,7 @@ fn detects_invalid_rust_syntax()
 fn builds_a_project_documentation_model()
 ```
 
-[View source](../src/lib.rs#L256)
+[View source](../src/lib.rs#L325)
 
 <a id="file-src-main-rs"></a>
 ## `src/main.rs`
@@ -1909,7 +2273,7 @@ enum Command
 fn main() -> Result<()>
 ```
 
-[View source](../src/main.rs#L37)
+[View source](../src/main.rs#L49)
 
 <a id="file-src-markdown-rs"></a>
 ## `src/markdown.rs`
@@ -1923,6 +2287,7 @@ Deterministic Markdown renderer for the language-neutral documentation model.
 pub fn render(
     project: &DocProject,
     title: &str,
+    description: Option<&str>,
     output_parent: &Path,
     source_url: Option<&str>,
 ) -> String
@@ -1939,7 +2304,7 @@ Render a project as Markdown, linking declarations to local source or a source U
 struct Anchors
 ```
 
-[View source](../src/markdown.rs#L97)
+[View source](../src/markdown.rs#L130)
 
 <a id="symbol-src-markdown-rs-method-new"></a>
 ### Method: `new`
@@ -1948,7 +2313,7 @@ struct Anchors
 fn new(project: &DocProject) -> Self
 ```
 
-[View source](../src/markdown.rs#L103)
+[View source](../src/markdown.rs#L136)
 
 <a id="symbol-src-markdown-rs-function-unique-anchor"></a>
 ### Function: `unique_anchor`
@@ -1957,7 +2322,7 @@ fn new(project: &DocProject) -> Self
 fn unique_anchor(used: &mut std::collections::HashMap<String, usize>, base: String) -> String
 ```
 
-[View source](../src/markdown.rs#L136)
+[View source](../src/markdown.rs#L169)
 
 <a id="symbol-src-markdown-rs-function-slug"></a>
 ### Function: `slug`
@@ -1966,7 +2331,7 @@ fn unique_anchor(used: &mut std::collections::HashMap<String, usize>, base: Stri
 fn slug(value: &str) -> String
 ```
 
-[View source](../src/markdown.rs#L146)
+[View source](../src/markdown.rs#L179)
 
 <a id="symbol-src-markdown-rs-function-kind-label"></a>
 ### Function: `kind_label`
@@ -1975,7 +2340,7 @@ fn slug(value: &str) -> String
 fn kind_label(kind: crate::model::SymbolKind) -> &'static str
 ```
 
-[View source](../src/markdown.rs#L168)
+[View source](../src/markdown.rs#L201)
 
 <a id="symbol-src-markdown-rs-function-source-link"></a>
 ### Function: `source_link`
@@ -1989,7 +2354,7 @@ fn source_link(
 ) -> String
 ```
 
-[View source](../src/markdown.rs#L180)
+[View source](../src/markdown.rs#L213)
 
 <a id="symbol-src-markdown-rs-function-project-relative-path"></a>
 ### Function: `project_relative_path`
@@ -1998,7 +2363,7 @@ fn source_link(
 fn project_relative_path(project: &DocProject, path: &str) -> PathBuf
 ```
 
-[View source](../src/markdown.rs#L206)
+[View source](../src/markdown.rs#L239)
 
 <a id="symbol-src-markdown-rs-function-relative-path"></a>
 ### Function: `relative_path`
@@ -2007,7 +2372,7 @@ fn project_relative_path(project: &DocProject, path: &str) -> PathBuf
 fn relative_path(from: &Path, to: &Path) -> PathBuf
 ```
 
-[View source](../src/markdown.rs#L217)
+[View source](../src/markdown.rs#L257)
 
 <a id="symbol-src-markdown-rs-function-encode-path"></a>
 ### Function: `encode_path`
@@ -2016,7 +2381,7 @@ fn relative_path(from: &Path, to: &Path) -> PathBuf
 fn encode_path(path: &Path) -> String
 ```
 
-[View source](../src/markdown.rs#L243)
+[View source](../src/markdown.rs#L283)
 
 <a id="symbol-src-markdown-rs-function-encode-url-base"></a>
 ### Function: `encode_url_base`
@@ -2025,7 +2390,7 @@ fn encode_path(path: &Path) -> String
 fn encode_url_base(base: &str) -> String
 ```
 
-[View source](../src/markdown.rs#L257)
+[View source](../src/markdown.rs#L297)
 
 <a id="symbol-src-markdown-rs-function-code-span"></a>
 ### Function: `code_span`
@@ -2034,7 +2399,7 @@ fn encode_url_base(base: &str) -> String
 fn code_span(value: &str) -> String
 ```
 
-[View source](../src/markdown.rs#L269)
+[View source](../src/markdown.rs#L309)
 
 <a id="symbol-src-markdown-rs-function-fenced-code"></a>
 ### Function: `fenced_code`
@@ -2043,7 +2408,7 @@ fn code_span(value: &str) -> String
 fn fenced_code(value: &str, language: &str) -> String
 ```
 
-[View source](../src/markdown.rs#L279)
+[View source](../src/markdown.rs#L319)
 
 <a id="symbol-src-markdown-rs-function-syntax-language"></a>
 ### Function: `syntax_language`
@@ -2052,7 +2417,7 @@ fn fenced_code(value: &str, language: &str) -> String
 fn syntax_language(path: &str) -> &'static str
 ```
 
-[View source](../src/markdown.rs#L285)
+[View source](../src/markdown.rs#L325)
 
 <a id="symbol-src-markdown-rs-function-max-backtick-run"></a>
 ### Function: `max_backtick_run`
@@ -2061,7 +2426,7 @@ fn syntax_language(path: &str) -> &'static str
 fn max_backtick_run(value: &str) -> usize
 ```
 
-[View source](../src/markdown.rs#L302)
+[View source](../src/markdown.rs#L342)
 
 <a id="symbol-src-markdown-rs-function-escape-heading"></a>
 ### Function: `escape_heading`
@@ -2070,7 +2435,7 @@ fn max_backtick_run(value: &str) -> usize
 fn escape_heading(value: &str) -> String
 ```
 
-[View source](../src/markdown.rs#L316)
+[View source](../src/markdown.rs#L356)
 
 <a id="symbol-src-markdown-rs-module-tests"></a>
 ### Module: `tests`
@@ -2079,7 +2444,7 @@ fn escape_heading(value: &str) -> String
 mod tests
 ```
 
-[View source](../src/markdown.rs#L328)
+[View source](../src/markdown.rs#L368)
 
 <a id="symbol-src-markdown-rs-function-fixture"></a>
 ### Function: `fixture`
@@ -2088,7 +2453,7 @@ mod tests
 fn fixture() -> DocProject
 ```
 
-[View source](../src/markdown.rs#L332)
+[View source](../src/markdown.rs#L372)
 
 <a id="symbol-src-markdown-rs-function-renders-deterministic-anchors-and-local-source-links"></a>
 ### Function: `renders_deterministic_anchors_and_local_source_links`
@@ -2097,7 +2462,7 @@ fn fixture() -> DocProject
 fn renders_deterministic_anchors_and_local_source_links()
 ```
 
-[View source](../src/markdown.rs#L362)
+[View source](../src/markdown.rs#L402)
 
 <a id="symbol-src-markdown-rs-function-remote-links-encode-source-paths-and-duplicate-anchors-are-unique"></a>
 ### Function: `remote_links_encode_source_paths_and_duplicate_anchors_are_unique`
@@ -2106,7 +2471,7 @@ fn renders_deterministic_anchors_and_local_source_links()
 fn remote_links_encode_source_paths_and_duplicate_anchors_are_unique()
 ```
 
-[View source](../src/markdown.rs#L373)
+[View source](../src/markdown.rs#L413)
 
 <a id="symbol-src-markdown-rs-function-inline-code-delimiters-do-not-break-on-backticks-in-names"></a>
 ### Function: `inline_code_delimiters_do_not_break_on_backticks_in_names`
@@ -2115,7 +2480,7 @@ fn remote_links_encode_source_paths_and_duplicate_anchors_are_unique()
 fn inline_code_delimiters_do_not_break_on_backticks_in_names()
 ```
 
-[View source](../src/markdown.rs#L390)
+[View source](../src/markdown.rs#L431)
 
 <a id="file-src-model-rs"></a>
 ## `src/model.rs`
@@ -2329,6 +2694,412 @@ fn fixture_covers_nested_generics_attributes_and_doc_comments()
 
 [View source](../src/rust_extract.rs#L280)
 
+<a id="file-src-validate-rs"></a>
+## `src/validate.rs`
+
+Consistency and source-content checks applied before documentation export.
+
+<a id="symbol-src-validate-rs-function-append-consistency-diagnostics"></a>
+### Function: `append_consistency_diagnostics`
+
+```rust
+pub fn append_consistency_diagnostics(project: &mut DocProject)
+```
+
+Append warnings for inconsistent model data and risky source-derived text.
+
+[View source](../src/validate.rs#L10)
+
+<a id="symbol-src-validate-rs-function-is-safe-relative-path"></a>
+### Function: `is_safe_relative_path`
+
+```rust
+fn is_safe_relative_path(value: &str) -> bool
+```
+
+[View source](../src/validate.rs#L76)
+
+<a id="symbol-src-validate-rs-function-valid-span"></a>
+### Function: `valid_span`
+
+```rust
+fn valid_span(span: &SourceSpan) -> bool
+```
+
+[View source](../src/validate.rs#L85)
+
+<a id="symbol-src-validate-rs-function-check-markdown"></a>
+### Function: `check_markdown`
+
+```rust
+fn check_markdown(text: &str, span: Option<&SourceSpan>, diagnostics: &mut Vec<Diagnostic>)
+```
+
+[View source](../src/validate.rs#L93)
+
+<a id="symbol-src-validate-rs-function-check-control-characters"></a>
+### Function: `check_control_characters`
+
+```rust
+fn check_control_characters(
+    text: &str,
+    span: Option<&SourceSpan>,
+    diagnostics: &mut Vec<Diagnostic>,
+)
+```
+
+[View source](../src/validate.rs#L113)
+
+<a id="symbol-src-validate-rs-function-warning"></a>
+### Function: `warning`
+
+```rust
+fn warning(code: &str, message: &str, span: Option<SourceSpan>) -> Diagnostic
+```
+
+[View source](../src/validate.rs#L130)
+
+<a id="symbol-src-validate-rs-module-tests"></a>
+### Module: `tests`
+
+```rust
+mod tests
+```
+
+[View source](../src/validate.rs#L140)
+
+<a id="symbol-src-validate-rs-function-reports-unsafe-paths-inconsistent-spans-and-control-characters"></a>
+### Function: `reports_unsafe_paths_inconsistent_spans_and_control_characters`
+
+```rust
+fn reports_unsafe_paths_inconsistent_spans_and_control_characters()
+```
+
+[View source](../src/validate.rs#L145)
+
+<a id="file-tests-adapter-fixtures-rs"></a>
+## `tests/adapter_fixtures.rs`
+
+<a id="symbol-tests-adapter-fixtures-rs-function-extract"></a>
+### Function: `extract`
+
+```rust
+fn extract(path: &str, source: &str) -> docweave_engine::model::DocFile
+```
+
+[View source](../tests/adapter_fixtures.rs#L6)
+
+<a id="symbol-tests-adapter-fixtures-rs-function-rust-fixture-covers-documented-and-undocumented-declarations"></a>
+### Function: `rust_fixture_covers_documented_and_undocumented_declarations`
+
+```rust
+fn rust_fixture_covers_documented_and_undocumented_declarations()
+```
+
+[View source](../tests/adapter_fixtures.rs#L16)
+
+<a id="symbol-tests-adapter-fixtures-rs-function-symbol"></a>
+### Function: `symbol`
+
+```rust
+fn symbol<'a>(
+    file: &'a docweave_engine::model::DocFile,
+    name: &str,
+) -> &'a docweave_engine::model::DocSymbol
+```
+
+[View source](../tests/adapter_fixtures.rs#L28)
+
+<a id="symbol-tests-adapter-fixtures-rs-function-c-fixture-covers-file-docs-complex-signature-and-undocumented-declarations"></a>
+### Function: `c_fixture_covers_file_docs_complex_signature_and_undocumented_declarations`
+
+```rust
+fn c_fixture_covers_file_docs_complex_signature_and_undocumented_declarations()
+```
+
+[View source](../tests/adapter_fixtures.rs#L47)
+
+<a id="symbol-tests-adapter-fixtures-rs-function-cpp-fixture-covers-nested-scopes-and-complex-signatures"></a>
+### Function: `cpp_fixture_covers_nested_scopes_and_complex_signatures`
+
+```rust
+fn cpp_fixture_covers_nested_scopes_and_complex_signatures()
+```
+
+[View source](../tests/adapter_fixtures.rs#L71)
+
+<a id="symbol-tests-adapter-fixtures-rs-function-python-fixture-covers-docstrings-constants-methods-and-missing-docs"></a>
+### Function: `python_fixture_covers_docstrings_constants_methods_and_missing_docs`
+
+```rust
+fn python_fixture_covers_docstrings_constants_methods_and_missing_docs()
+```
+
+[View source](../tests/adapter_fixtures.rs#L96)
+
+<a id="symbol-tests-adapter-fixtures-rs-function-lua-fixture-covers-doc-comments-methods-and-nested-code"></a>
+### Function: `lua_fixture_covers_doc_comments_methods_and_nested_code`
+
+```rust
+fn lua_fixture_covers_doc_comments_methods_and_nested_code()
+```
+
+[View source](../tests/adapter_fixtures.rs#L131)
+
+<a id="symbol-tests-adapter-fixtures-rs-function-malformed-non-rust-fixtures-emit-source-located-diagnostics"></a>
+### Function: `malformed_non_rust_fixtures_emit_source_located_diagnostics`
+
+```rust
+fn malformed_non_rust_fixtures_emit_source_located_diagnostics()
+```
+
+[View source](../tests/adapter_fixtures.rs#L152)
+
+<a id="file-tests-custom-adapters-rs"></a>
+## `tests/custom_adapters.rs`
+
+<a id="symbol-tests-custom-adapters-rs-struct-demoadapter"></a>
+### Struct: `DemoAdapter`
+
+```rust
+struct DemoAdapter;
+```
+
+[View source](../tests/custom_adapters.rs#L10)
+
+<a id="symbol-tests-custom-adapters-rs-method-id"></a>
+### Method: `id`
+
+```rust
+fn id(&self) -> &'static str
+```
+
+[View source](../tests/custom_adapters.rs#L13)
+
+<a id="symbol-tests-custom-adapters-rs-method-extensions"></a>
+### Method: `extensions`
+
+```rust
+fn extensions(&self) -> &'static [&'static str]
+```
+
+[View source](../tests/custom_adapters.rs#L16)
+
+<a id="symbol-tests-custom-adapters-rs-method-language"></a>
+### Method: `language`
+
+```rust
+fn language(&self) -> Language
+```
+
+[View source](../tests/custom_adapters.rs#L19)
+
+<a id="symbol-tests-custom-adapters-rs-method-extract"></a>
+### Method: `extract`
+
+```rust
+fn extract(&self, path: &Path, _source: &str, tree: &Tree) -> DocFile
+```
+
+[View source](../tests/custom_adapters.rs#L22)
+
+<a id="symbol-tests-custom-adapters-rs-function-caller-supplied-adapter-can-scan-and-extract-a-new-extension"></a>
+### Function: `caller_supplied_adapter_can_scan_and_extract_a_new_extension`
+
+```rust
+fn caller_supplied_adapter_can_scan_and_extract_a_new_extension()
+```
+
+[View source](../tests/custom_adapters.rs#L34)
+
+<a id="symbol-tests-custom-adapters-rs-function-adapter-registry-rejects-duplicate-extensions"></a>
+### Function: `adapter_registry_rejects_duplicate_extensions`
+
+```rust
+fn adapter_registry_rejects_duplicate_extensions()
+```
+
+[View source](../tests/custom_adapters.rs#L63)
+
+<a id="file-tests-fixtures-adapter-c-c"></a>
+## `tests/fixtures/adapter_c.c`
+
+File-level C API documentation.
+
+<a id="symbol-tests-fixtures-adapter-c-c-function-add-into"></a>
+### Function: `add_into`
+
+```c
+int add_into(int left, int right, int *result)
+```
+
+Adds two integers with an explicit output pointer.
+
+[View source](../tests/fixtures/adapter_c.c#L4)
+
+<a id="symbol-tests-fixtures-adapter-c-c-function-undocumented"></a>
+### Function: `undocumented`
+
+```c
+int undocumented(int value)
+```
+
+[View source](../tests/fixtures/adapter_c.c#L9)
+
+<a id="symbol-tests-fixtures-adapter-c-c-struct-entry"></a>
+### Struct: `Entry`
+
+```c
+struct Entry
+```
+
+[View source](../tests/fixtures/adapter_c.c#L12)
+
+<a id="file-tests-fixtures-adapter-cpp-cpp"></a>
+## `tests/fixtures/adapter_cpp.cpp`
+
+C++ API documentation.
+
+<a id="symbol-tests-fixtures-adapter-cpp-cpp-module-api"></a>
+### Module: `api`
+
+```cpp
+namespace api
+```
+
+[View source](../tests/fixtures/adapter_cpp.cpp#L2)
+
+<a id="symbol-tests-fixtures-adapter-cpp-cpp-struct-store"></a>
+### Struct: `Store`
+
+```cpp
+class Store
+```
+
+A generic-ish class with a nested declaration.
+
+[View source](../tests/fixtures/adapter_cpp.cpp#L4)
+
+<a id="symbol-tests-fixtures-adapter-cpp-cpp-method-find"></a>
+### Method: `find`
+
+```cpp
+const std::vector<std::pair<int, std::string>> &find(
+        const std::vector<int> &keys) const
+```
+
+Looks up a value using a complex parameter type.
+
+[View source](../tests/fixtures/adapter_cpp.cpp#L7)
+
+<a id="symbol-tests-fixtures-adapter-cpp-cpp-function-undocumented-cpp"></a>
+### Function: `undocumented_cpp`
+
+```cpp
+int undocumented_cpp(int value)
+```
+
+[View source](../tests/fixtures/adapter_cpp.cpp#L14)
+
+<a id="file-tests-fixtures-adapter-lua-lua"></a>
+## `tests/fixtures/adapter_lua.lua`
+
+Lua module documentation.
+
+<a id="symbol-tests-fixtures-adapter-lua-lua-function-api-add"></a>
+### Function: `api.add`
+
+```lua
+function api.add(left, right)
+```
+
+Adds two values.
+
+[View source](../tests/fixtures/adapter_lua.lua#L4)
+
+<a id="symbol-tests-fixtures-adapter-lua-lua-function-nested"></a>
+### Function: `nested`
+
+```lua
+local function nested(value)
+```
+
+[View source](../tests/fixtures/adapter_lua.lua#L5)
+
+<a id="symbol-tests-fixtures-adapter-lua-lua-method-api-label"></a>
+### Method: `api:label`
+
+```lua
+function api:label(value)
+```
+
+[View source](../tests/fixtures/adapter_lua.lua#L11)
+
+<a id="symbol-tests-fixtures-adapter-lua-lua-function-undocumented"></a>
+### Function: `undocumented`
+
+```lua
+function undocumented(value)
+```
+
+[View source](../tests/fixtures/adapter_lua.lua#L15)
+
+<a id="file-tests-fixtures-adapter-python-py"></a>
+## `tests/fixtures/adapter_python.py`
+
+Python module documentation.
+
+<a id="symbol-tests-fixtures-adapter-python-py-constant-max-size"></a>
+### Constant: `MAX_SIZE`
+
+```python
+MAX_SIZE = 20
+```
+
+[View source](../tests/fixtures/adapter_python.py#L3)
+
+<a id="symbol-tests-fixtures-adapter-python-py-struct-store"></a>
+### Struct: `Store`
+
+```python
+class Store:
+```
+
+A documented store.
+
+[View source](../tests/fixtures/adapter_python.py#L6)
+
+<a id="symbol-tests-fixtures-adapter-python-py-method-find"></a>
+### Method: `find`
+
+```python
+def find(self, keys: list[tuple[int, str]], *, limit: int = 10) -> tuple[str, ...]:
+```
+
+Find values for the requested keys.
+
+[View source](../tests/fixtures/adapter_python.py#L9)
+
+<a id="symbol-tests-fixtures-adapter-python-py-method-undocumented"></a>
+### Method: `undocumented`
+
+```python
+def undocumented(self, value: int) -> int:
+```
+
+[View source](../tests/fixtures/adapter_python.py#L13)
+
+<a id="symbol-tests-fixtures-adapter-python-py-function-normalize"></a>
+### Function: `normalize`
+
+```python
+def normalize(value: str) -> str:
+```
+
+Normalize a value.
+
+[View source](../tests/fixtures/adapter_python.py#L16)
+
 <a id="file-tests-fixtures-malformed-rs"></a>
 ## `tests/fixtures/malformed.rs`
 
@@ -2448,3 +3219,39 @@ fn cli_rejects_invalid_configuration_without_creating_output()
 ```
 
 [View source](../tests/generate_markdown.rs#L41)
+
+<a id="symbol-tests-generate-markdown-rs-function-cli-applies-output-directory-metadata-and-file-extension-filters"></a>
+### Function: `cli_applies_output_directory_metadata_and_file_extension_filters`
+
+```rust
+fn cli_applies_output_directory_metadata_and_file_extension_filters()
+```
+
+[View source](../tests/generate_markdown.rs#L57)
+
+<a id="symbol-tests-generate-markdown-rs-function-cli-json-output-includes-version-and-project-metadata"></a>
+### Function: `cli_json_output_includes_version_and_project_metadata`
+
+```rust
+fn cli_json_output_includes_version_and_project_metadata()
+```
+
+[View source](../tests/generate_markdown.rs#L102)
+
+<a id="symbol-tests-generate-markdown-rs-function-html-output-has-file-and-module-navigation-and-blocks-unsafe-source-content"></a>
+### Function: `html_output_has_file_and_module_navigation_and_blocks_unsafe_source_content`
+
+```rust
+fn html_output_has_file_and_module_navigation_and_blocks_unsafe_source_content()
+```
+
+[View source](../tests/generate_markdown.rs#L137)
+
+<a id="symbol-tests-generate-markdown-rs-function-all-output-formats-are-deterministic-for-repeated-runs"></a>
+### Function: `all_output_formats_are_deterministic_for_repeated_runs`
+
+```rust
+fn all_output_formats_are_deterministic_for_repeated_runs()
+```
+
+[View source](../tests/generate_markdown.rs#L175)

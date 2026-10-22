@@ -12,6 +12,19 @@ fn extract(path: &str, source: &str) -> docweave_engine::model::DocFile {
     adapter.extract(path, source, &tree)
 }
 
+#[test]
+fn rust_fixture_covers_documented_and_undocumented_declarations() {
+    let source = "//! Rust API docs.\n/// Documented function.\npub fn documented() {}\npub fn undocumented() {}\n";
+    let file = extract("adapter.rs", source);
+    assert_eq!(file.documentation.as_deref(), Some("Rust API docs."));
+    assert_eq!(
+        symbol(&file, "documented").documentation.as_deref(),
+        Some("Documented function.")
+    );
+    assert!(symbol(&file, "undocumented").documentation.is_none());
+    assert!(file.diagnostics.is_empty());
+}
+
 fn symbol<'a>(
     file: &'a docweave_engine::model::DocFile,
     name: &str,
@@ -138,6 +151,7 @@ fn lua_fixture_covers_doc_comments_methods_and_nested_code() {
 #[test]
 fn malformed_non_rust_fixtures_emit_source_located_diagnostics() {
     for (path, source) in [
+        ("bad.rs", "pub fn broken( {\n"),
         ("bad.c", "int broken( { return 1; }"),
         ("bad.cpp", "namespace api { int broken( { }"),
         ("bad.py", "def broken(:\n    pass\n"),

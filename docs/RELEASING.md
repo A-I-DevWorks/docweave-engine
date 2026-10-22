@@ -21,6 +21,10 @@ version as `vX.Y.Z` in Git and attach the source archive and release notes to
 the hosted release. Do not commit credentials or publish artifacts from an
 unreviewed working tree.
 
+The [planned 1.0 release notes](RELEASE_NOTES_1.0.md) are a draft. Update them
+with the final version, supported platforms, and verified upgrade steps before
+publishing.
+
 ## Versioning contracts
 
 - Follow semantic versioning for the CLI and Rust library once 1.0 is released.

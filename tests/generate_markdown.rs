@@ -170,3 +170,43 @@ fn html_output_has_file_and_module_navigation_and_blocks_unsafe_source_content()
     assert!(html.contains("&lt;script&gt;alert(1)&lt;/script&gt;"));
     assert!(!html.contains("href=\"javascript:alert(1)\""));
 }
+
+#[test]
+fn all_output_formats_are_deterministic_for_repeated_runs() {
+    let temp = tempfile::tempdir().expect("temporary directory");
+    let source_dir = temp.path().join("src");
+    std::fs::create_dir(&source_dir).expect("source directory");
+    std::fs::write(
+        source_dir.join("lib.rs"),
+        "//! Stable project docs.\n/// A stable function.\npub fn stable() {}\n",
+    )
+    .expect("source fixture");
+    let config_path = temp.path().join("docweave.toml");
+    std::fs::write(
+        &config_path,
+        "config_version = 1\ntitle = \"Stable API\"\nsource = \"src\"\noutput = \"out/api.json\"\n",
+    )
+    .expect("config fixture");
+
+    for extension in ["md", "json", "html"] {
+        let output = temp.path().join(format!("out/api.{extension}"));
+        let generate = || {
+            let result = Command::new(env!("CARGO_BIN_EXE_docweave"))
+                .args(["generate", "--config"])
+                .arg(&config_path)
+                .arg("--output")
+                .arg(&output)
+                .output()
+                .expect("run docweave");
+            assert!(
+                result.status.success(),
+                "{}",
+                String::from_utf8_lossy(&result.stderr)
+            );
+            std::fs::read(&output).expect("read generated output")
+        };
+        let first = generate();
+        let second = generate();
+        assert_eq!(first, second, "{extension} output should be deterministic");
+    }
+}

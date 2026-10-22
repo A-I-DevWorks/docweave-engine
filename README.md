@@ -4,7 +4,7 @@
 
 DocWeave analyzes source files, extracts code structure and documentation comments, and aims to publish consistent documentation in multiple formats.
 
-> **Project status:** Early development. Rust, C, C++, Python, and Lua source files can be scanned into a shared documentation model and rendered as Markdown, JSON, or HTML.
+> **Project status:** Pre-1.0 release preparation. Rust, C, C++, Python, and Lua source files can be scanned into a shared documentation model and rendered as Markdown, JSON, or HTML. See [the release criteria](docs/RELEASING.md) for remaining validation before a stable release.
 
 ## Current implementation
 

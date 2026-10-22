@@ -5,6 +5,9 @@ edition = "2024"
 description = "Cross-language source documentation engine built around Tree-sitter adapters."
 license = "MIT"
 readme = "README.md"
+repository = "https://github.com/A-I-DevWorks/docweave-engine"
+homepage = "https://github.com/A-I-DevWorks/docweave-engine"
+documentation = "https://docs.rs/docweave-engine"
 
 [dependencies]
 anyhow = "1.0"

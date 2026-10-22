@@ -14,8 +14,12 @@ env:
 
 jobs:
   test:
-    name: Format, lint, and test
-    runs-on: ubuntu-latest
+    name: Format, lint, and test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - name: Check out source
         uses: actions/checkout@v4
@@ -24,4 +28,5 @@ jobs:
         with:
           components: rustfmt, clippy
       - name: Run checks
+        shell: bash
         run: ./scripts/check.sh
