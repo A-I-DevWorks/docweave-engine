@@ -1,8 +1,8 @@
 //! Core library for DocWeave Engine.
 //!
-//! The first milestone validates the Tree-sitter parsing pipeline for Rust.
-//! Documentation extraction and language-neutral rendering will be layered on
-//! top of this API in subsequent milestones.
+//! Provides Tree-sitter source discovery, built-in and caller-supplied language
+//! adapters, a language-neutral documentation model, and Markdown, JSON, and
+//! HTML generation.
 
 use std::path::{Path, PathBuf};
 
@@ -38,16 +38,29 @@ pub struct ParsedFile {
 /// Directories commonly containing generated files or dependencies are skipped.
 /// Individual unreadable or malformed files return an error with path context.
 pub fn scan_rust(root: &Path) -> Result<Vec<ParsedFile>> {
-    scan_sources(root, Some("rust"))
+    scan_sources(root, Some("rust"), &adapters::ADAPTERS)
 }
 
 /// Recursively discover supported C, C++, Python, Lua, and Rust files and parse
 /// each file with its registered Tree-sitter adapter.
 pub fn scan_project(root: &Path) -> Result<Vec<ParsedFile>> {
-    scan_sources(root, None)
+    scan_sources(root, None, &adapters::ADAPTERS)
 }
 
-fn scan_sources(root: &Path, only_adapter: Option<&str>) -> Result<Vec<ParsedFile>> {
+/// Scan supported files using an explicit adapter registry.
+pub fn scan_project_with_adapters(
+    root: &Path,
+    registered_adapters: &[&dyn adapters::LanguageAdapter],
+) -> Result<Vec<ParsedFile>> {
+    adapters::validate_registry(registered_adapters)?;
+    scan_sources(root, None, registered_adapters)
+}
+
+fn scan_sources(
+    root: &Path,
+    only_adapter: Option<&str>,
+    registered_adapters: &[&dyn adapters::LanguageAdapter],
+) -> Result<Vec<ParsedFile>> {
     if !root.exists() {
         anyhow::bail!("source directory does not exist: {}", root.display());
     }
@@ -76,13 +89,15 @@ fn scan_sources(root: &Path, only_adapter: Option<&str>) -> Result<Vec<ParsedFil
             continue;
         }
 
-        let Some(adapter) = adapters::adapter_for_path(entry.path()) else {
+        let Some(adapter) = adapters::adapter_for_path_in(entry.path(), registered_adapters) else {
             continue;
         };
         if only_adapter.is_some_and(|id| id != adapter.id()) {
             continue;
         }
-        let Some((mut parser, adapter)) = adapters::parser_for(entry.path())? else {
+        let Some((mut parser, adapter)) =
+            adapters::parser_for_in(entry.path(), registered_adapters)?
+        else {
             continue;
         };
 
@@ -130,16 +145,29 @@ pub fn document_rust(root: &Path) -> Result<DocProject> {
 
 /// Scan all supported source languages and extract the shared documentation model.
 pub fn document_project(root: &Path) -> Result<DocProject> {
+    document_project_with_adapters(root, &adapters::ADAPTERS)
+}
+
+/// Scan and extract a project using an explicit adapter registry.
+pub fn document_project_with_adapters(
+    root: &Path,
+    registered_adapters: &[&dyn adapters::LanguageAdapter],
+) -> Result<DocProject> {
+    adapters::validate_registry(registered_adapters)?;
     let root = root
         .canonicalize()
         .with_context(|| format!("failed to resolve source directory {}", root.display()))?;
-    let files = scan_project(&root)?;
+    let files = scan_sources(&root, None, registered_adapters)?;
     let files = files
         .iter()
-        .filter_map(|file| {
-            let adapter = adapters::adapter_by_id(&file.adapter_id)?;
+        .map(|file| {
+            let adapter = registered_adapters
+                .iter()
+                .copied()
+                .find(|adapter| adapter.id() == file.adapter_id)
+                .expect("validated adapter registry contains selected id");
             let path = file.path.strip_prefix(&root).unwrap_or(&file.path);
-            Some(adapter.extract(path, &file.source, &file.tree))
+            adapter.extract(path, &file.source, &file.tree)
         })
         .collect();
     Ok(DocProject {
@@ -150,8 +178,17 @@ pub fn document_project(root: &Path) -> Result<DocProject> {
 
 /// Generate documentation in the format selected by the output extension.
 pub fn generate_documentation(config: &config::Config) -> Result<PathBuf> {
+    generate_documentation_with_adapters(config, &adapters::ADAPTERS)
+}
+
+/// Generate documentation using an explicit adapter registry.
+pub fn generate_documentation_with_adapters(
+    config: &config::Config,
+    registered_adapters: &[&dyn adapters::LanguageAdapter],
+) -> Result<PathBuf> {
     config.validate()?;
-    let mut project = document_project(&config.source)?;
+    adapters::validate_registry(registered_adapters)?;
+    let mut project = document_project_with_adapters(&config.source, registered_adapters)?;
     project.files.retain(|file| {
         let extension = Path::new(&file.path)
             .extension()

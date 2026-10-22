@@ -55,10 +55,10 @@
 
 ## Milestone 8 — Prepare for community language adapters
 
-- [ ] Define a stable public interface for language adapters.
-- [ ] Separate shared adapter conventions from language-specific behavior.
-- [ ] Provide a minimal, standalone adapter example.
-- [ ] Document how to implement, register, and validate an adapter.
+- [x] Define a stable public interface for language adapters.
+- [x] Separate shared adapter conventions from language-specific behavior.
+- [x] Provide a minimal, standalone adapter example.
+- [x] Document how to implement, register, and validate an adapter.
 
 ## Milestone 9 — Prepare a usable release
 

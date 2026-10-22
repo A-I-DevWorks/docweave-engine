@@ -63,7 +63,7 @@ docweave generate --config docweave.toml --output-dir ./site --include-extension
 
 `--output` selects a complete output path and format by extension; `--output-dir` preserves the configured filename and changes its directory. Use `docweave --help` or `docweave generate --help` for command options. Relative config paths resolve from the config file's directory; CLI output paths resolve from the current working directory. The output directory is created when needed. To check a checkout before publishing, run `cargo test`, then run `docweave scan ./path/to/project` and `docweave generate --config docweave.toml`.
 
-The supported languages currently have focused initial extraction coverage; see [the language adapter guide](docs/ADDING_LANGUAGE_ADAPTERS.md) for extensions, comment conventions, supported declarations, and how to add another adapter. JSON output includes a versioned metadata envelope; see [the JSON format guide](docs/JSON_FORMAT.md).
+The supported languages currently have focused initial extraction coverage; see [the language adapter guide](docs/ADDING_LANGUAGE_ADAPTERS.md) for extensions, comment conventions, supported declarations, and how to implement a custom adapter. JSON output includes a versioned metadata envelope; see [the JSON format guide](docs/JSON_FORMAT.md).
 
 PDF generation is deferred; see the [PDF output evaluation](docs/PDF_OUTPUT_EVALUATION.md) for the current decision.
 

@@ -74,14 +74,59 @@ pub trait LanguageAdapter: Sync {
 - `extract` maps declarations, docs, signatures, spans, and parse diagnostics
   into the shared model.
 
+The public interface is `docweave_engine::adapters::LanguageAdapter`. In the
+current 0.x series, changes to this trait or the shared model may require
+adapter updates; after 1.0, compatibility follows semantic versioning. Keep
+language-specific syntax and comment interpretation inside `extract`. Keep
+shared path, diagnostic, and rendering rules in DocWeave and its shared
+helpers. Adapter IDs must be unique lowercase identifiers; file extensions
+must be unique case-insensitively and use ASCII letters or digits without a
+leading dot.
+
+## Use a custom adapter
+
+External adapters do not modify DocWeave's built-in registry. Pass an explicit
+registry to `document_project_with_adapters` or
+`generate_documentation_with_adapters`. Compose built-ins with a custom adapter
+by copying the built-in registry and appending your adapter:
+
+```rust,ignore
+use docweave_engine::adapters::LanguageAdapter;
+use docweave_engine::document_project_with_adapters;
+
+static CUSTOM: MyAdapter = MyAdapter;
+let mut adapters = docweave_engine::adapters::ADAPTERS.to_vec();
+adapters.push(&CUSTOM);
+let project = document_project_with_adapters(source_root, &adapters)?;
+```
+
+The registry is checked before scanning. Duplicate IDs, duplicate extensions,
+invalid identifiers, and invalid extensions return an error instead of
+silently dispatching to the first adapter. The public helpers
+`adapter_for_path_in`, `parser_for_in`, and `validate_registry` support custom
+registries directly. `scan_project_with_adapters` returns parsed trees when an
+adapter needs a separate extraction stage.
+
+See the compiling, standalone [`custom_adapter` example](../examples/custom_adapter.rs)
+and its [sample source](../examples/demo-sources/api.demo):
+
+```sh
+cargo run --example custom_adapter -- examples/demo-sources
+```
+
+The example uses the Rust grammar only to keep the example self-contained; a
+real adapter should add and return its own Tree-sitter grammar.
+
 ## Implementation steps
 
-1. **Choose the grammar and extension set.** Add the Rust grammar crate to
+1. **Choose the grammar and extension set.** Add the Tree-sitter grammar crate to
    `Cargo.toml`. Check that it supports the repository's Tree-sitter runtime
-   version. Keep extensions unique; `adapter_for_path` selects the first match.
-2. **Create an adapter module.** Add `src/adapters/<language>.rs` with a
-   zero-sized adapter struct and its `LanguageAdapter` implementation. Declare
-   the module and add a static instance to `ADAPTERS` in `src/adapters/mod.rs`.
+   version. Keep extensions unique; registry validation rejects ambiguous
+   dispatch.
+2. **Create an adapter.** Add a zero-sized adapter type and its
+   `LanguageAdapter` implementation. For an external adapter, pass it in an
+   explicit registry. For a built-in adapter, add the module and static
+   instance to `ADAPTERS` in `src/adapters/mod.rs`.
 3. **Inspect the grammar's node types.** Use representative source files to
    identify declarations, name fields, body nodes, and comment nodes. Tree-
    sitter gives syntax, not resolved types or runtime values.
@@ -109,10 +154,10 @@ pub trait LanguageAdapter: Sync {
    whenever the adapter changes.
 
 The shared helpers `parser_for`, `adapter_for_path`, `node_text`, `source_span`,
-and `diagnostics` are available from `docweave_engine::adapters`. Existing
-adapters under `src/adapters/` provide working examples. Rust's historical
-extractor remains in `src/rust_extract.rs` and is wrapped by
-`src/adapters/rust.rs`.
+and `diagnostics` are available from `docweave_engine::adapters`; registry-aware
+variants support custom adapter lists. Existing adapters under `src/adapters/`
+provide language-specific examples. Rust's historical extractor remains in
+`src/rust_extract.rs` and is wrapped by `src/adapters/rust.rs`.
 
 ## Local workflow
 
