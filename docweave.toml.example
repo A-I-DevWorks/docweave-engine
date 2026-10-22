@@ -1,6 +1,11 @@
 title = "DocWeave API"
+description = "Reference documentation generated from the project source."
 source = "."
 output = "docs/api.md"
+
+# Optional source-file filters; extensions are case-insensitive and may include a leading dot.
+# include_extensions = ["rs", "py"]
+# exclude_extensions = ["pyi"]
 
 # Optional: link source locations to a hosted repository.
 # source_url = "https://github.com/owner/repository/blob/main"

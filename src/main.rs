@@ -24,6 +24,9 @@ enum Command {
         path: PathBuf,
     },
     /// Generate documentation from supported source languages.
+    #[command(
+        after_long_help = "Examples:\n  docweave generate --config docweave.toml --output-dir ./site\n  docweave generate --config docweave.toml --include-extension rs --exclude-extension h\n  docweave generate --output ./site/api.html"
+    )]
     Generate {
         /// TOML configuration file. Relative config paths resolve from its directory.
         #[arg(long, short)]
@@ -31,6 +34,15 @@ enum Command {
         /// Override the configured output path and select format by extension.
         #[arg(long, short)]
         output: Option<PathBuf>,
+        /// Write the configured output filename into this directory.
+        #[arg(long, conflicts_with = "output")]
+        output_dir: Option<PathBuf>,
+        /// Include only these file extensions (repeat the option to add values).
+        #[arg(long = "include-extension", value_name = "EXT", action = clap::ArgAction::Append)]
+        include_extensions: Option<Vec<String>>,
+        /// Exclude these file extensions (repeat the option to add values).
+        #[arg(long = "exclude-extension", value_name = "EXT", action = clap::ArgAction::Append)]
+        exclude_extensions: Option<Vec<String>>,
     },
 }
 
@@ -58,13 +70,21 @@ fn main() -> Result<()> {
                 std::process::exit(1);
             }
         }
-        Command::Generate { config, output } => {
-            let config = Config::load(config.as_deref())?;
-            let config = if let Some(output) = output {
-                config.with_output(output)?
-            } else {
-                config
-            };
+        Command::Generate {
+            config,
+            output,
+            output_dir,
+            include_extensions,
+            exclude_extensions,
+        } => {
+            let mut config = Config::load(config.as_deref())?;
+            if let Some(output) = output {
+                config = config.with_output(output)?;
+            }
+            if let Some(output_dir) = output_dir {
+                config = config.with_output_dir(output_dir)?;
+            }
+            config = config.with_extension_filters(include_extensions, exclude_extensions)?;
             let output = generate_documentation(&config)?;
             println!("Generated documentation at {}", output.display());
         }

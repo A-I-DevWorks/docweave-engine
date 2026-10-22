@@ -8,11 +8,16 @@ use crate::model::{DocProject, SourceSpan};
 pub fn render(
     project: &DocProject,
     title: &str,
+    description: Option<&str>,
     output_parent: &Path,
     source_url: Option<&str>,
 ) -> String {
     let anchors = Anchors::new(project);
     let mut output = format!("# {}\n\n", escape_heading(title));
+    if let Some(description) = description {
+        output.push_str(description.trim());
+        output.push_str("\n\n");
+    }
     output.push_str("## Contents\n\n");
 
     for (file_index, file) in project.files.iter().enumerate() {
@@ -361,8 +366,8 @@ mod tests {
     #[test]
     fn renders_deterministic_anchors_and_local_source_links() {
         let project = fixture();
-        let first = render(&project, "API docs", Path::new("/repo/docs"), None);
-        let second = render(&project, "API docs", Path::new("/repo/docs"), None);
+        let first = render(&project, "API docs", None, Path::new("/repo/docs"), None);
+        let second = render(&project, "API docs", None, Path::new("/repo/docs"), None);
         assert_eq!(first, second);
         assert!(first.contains("<a id=\"symbol-src-lib-rs-function-hello-world\"></a>"));
         assert!(first.contains("[View source](../src/lib.rs#L7)"));
@@ -379,6 +384,7 @@ mod tests {
         let output = render(
             &project,
             "API docs",
+            None,
             Path::new("/repo/docs"),
             Some("https://example.test/repo/blob/main"),
         );

@@ -10,6 +10,7 @@ use crate::model::{DocProject, SourceSpan};
 pub fn render(
     project: &DocProject,
     title: &str,
+    description: Option<&str>,
     output_parent: &Path,
     source_url: Option<&str>,
 ) -> String {
@@ -35,6 +36,9 @@ pub fn render(
         output.push_str("</ul></li>\n");
     }
     output.push_str("</ul></nav>\n<main>\n");
+    if let Some(description) = description {
+        output.push_str(&render_markdown(description));
+    }
 
     for (file_index, file) in project.files.iter().enumerate() {
         output.push_str(&format!(

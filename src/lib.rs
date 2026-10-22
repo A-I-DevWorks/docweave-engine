@@ -47,6 +47,12 @@ pub fn scan_project(root: &Path) -> Result<Vec<ParsedFile>> {
 }
 
 fn scan_sources(root: &Path, only_adapter: Option<&str>) -> Result<Vec<ParsedFile>> {
+    if !root.exists() {
+        anyhow::bail!("source directory does not exist: {}", root.display());
+    }
+    if !root.is_dir() {
+        anyhow::bail!("source path is not a directory: {}", root.display());
+    }
     let mut parsed = Vec::new();
 
     for entry in WalkDir::new(root)
@@ -144,7 +150,24 @@ pub fn document_project(root: &Path) -> Result<DocProject> {
 /// Generate documentation in the format selected by the output extension.
 pub fn generate_documentation(config: &config::Config) -> Result<PathBuf> {
     config.validate()?;
-    let project = document_project(&config.source)?;
+    let mut project = document_project(&config.source)?;
+    project.files.retain(|file| {
+        let extension = Path::new(&file.path)
+            .extension()
+            .and_then(|extension| extension.to_str())
+            .unwrap_or_default()
+            .to_ascii_lowercase();
+        let included = config.include_extensions.is_empty()
+            || config
+                .include_extensions
+                .iter()
+                .any(|candidate| candidate == &extension);
+        included
+            && !config
+                .exclude_extensions
+                .iter()
+                .any(|candidate| candidate == &extension)
+    });
     let parent = config.output.parent().unwrap_or(Path::new("."));
     std::fs::create_dir_all(parent)
         .with_context(|| format!("failed to create output directory {}", parent.display()))?;
@@ -161,6 +184,7 @@ pub fn generate_documentation(config: &config::Config) -> Result<PathBuf> {
         Some("md") => markdown::render(
             &project,
             &config.title,
+            config.description.as_deref(),
             &output_parent,
             config.source_url.as_deref(),
         ),
@@ -168,6 +192,7 @@ pub fn generate_documentation(config: &config::Config) -> Result<PathBuf> {
         Some("html") => html::render(
             &project,
             &config.title,
+            config.description.as_deref(),
             &output_parent,
             config.source_url.as_deref(),
         ),

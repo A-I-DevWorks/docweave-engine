@@ -20,15 +20,14 @@ DocWeave analyzes source files, extracts code structure and documentation commen
 
 ## Quick start
 
-Install the Rust stable toolchain, then run:
+Install the [Rust stable toolchain](https://www.rust-lang.org/tools/install), then build and install the CLI from the repository root:
 
 ```sh
-cargo test
-cargo run -- scan .
-cargo run -- generate --config docweave.toml
+cargo install --path .
+docweave --help
 ```
 
-Scan a specific project directory:
+To run directly from the checkout without installing:
 
 ```sh
 cargo run -- scan ./path/to/project
@@ -37,6 +36,32 @@ cargo run -- scan ./path/to/project
 The first build downloads dependencies from crates.io. Source files are parsed as data; DocWeave does not execute analyzed source code.
 
 Copy [docweave.toml.example](docweave.toml.example) to `docweave.toml`, edit its title and paths, then run `cargo run -- generate --config docweave.toml`. The output extension selects Markdown (`.md`), JSON (`.json`), or HTML (`.html`). Without a config file, generation uses the current directory as source and writes `docs.md`; `--output` can override the output file. Markdown and HTML include documentation comments, signatures, and parse diagnostics; JSON serializes the language-neutral model. HTML escapes source-derived text and treats raw HTML in doc comments as text. Set `source_url` to link to a hosted source repository instead of local files.
+
+Create a config file such as `docweave.toml`:
+
+```toml
+title = "Example API"
+description = "Reference documentation for the example project."
+source = "./src"
+output = "./site/api.md"
+source_url = "https://github.com/owner/repository/blob/main"
+include_extensions = ["rs", "py"]
+exclude_extensions = ["pyi"]
+```
+
+Then generate the docs:
+
+```sh
+docweave generate --config docweave.toml
+```
+
+The title is used in generated Markdown and HTML; description is introductory Markdown in those formats. JSON output serializes the language-neutral documentation model. `source_url` adds hosted source links to Markdown and HTML. Include filters allow only listed extensions; exclude filters then remove matching extensions. Extension matching ignores case and an optional leading dot. CLI options `--output-dir`, `--include-extension`, and `--exclude-extension` override those settings for one run; repeated extension options accept multiple values. For example:
+
+```sh
+docweave generate --config docweave.toml --output-dir ./site --include-extension rs --include-extension py
+```
+
+`--output` selects a complete output path and format by extension; `--output-dir` preserves the configured filename and changes its directory. Use `docweave --help` or `docweave generate --help` for command options. Relative config paths resolve from the config file's directory; CLI output paths resolve from the current working directory. The output directory is created when needed. To check a checkout before publishing, run `cargo test`, then run `docweave scan ./path/to/project` and `docweave generate --config docweave.toml`.
 
 The supported languages currently have focused initial extraction coverage; see [the language adapter guide](docs/ADDING_LANGUAGE_ADAPTERS.md) for extensions, comment conventions, supported declarations, and how to add another adapter.
 

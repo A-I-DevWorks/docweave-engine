@@ -41,10 +41,10 @@
 
 ## Milestone 6 — Improve the user experience
 
-- [ ] Improve CLI errors for invalid configuration and paths.
-- [ ] Add CLI options for output directories and file filters.
-- [ ] Support configuration of documentation titles and metadata.
-- [ ] Document installation, configuration, and end-to-end usage.
+- [x] Improve CLI errors for invalid configuration and paths.
+- [x] Add CLI options for output directories and file filters.
+- [x] Support configuration of documentation titles and metadata.
+- [x] Document installation, configuration, and end-to-end usage.
 
 ## Milestone 7 — Prepare outputs for publishing
 
